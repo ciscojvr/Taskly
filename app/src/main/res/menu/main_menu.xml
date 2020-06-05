@@ -5,7 +5,7 @@
     android:layout_height="match_parent">
 
     <item
-        android:id="@+id/task_delete"
+        android:id="@+id/action_add_task"
         android:icon="@android:drawable/ic_menu_add"
         android:title="Add Task"
         app:showAsAction="always"
