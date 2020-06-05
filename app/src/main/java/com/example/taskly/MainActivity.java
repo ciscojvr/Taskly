@@ -26,6 +26,7 @@ import org.w3c.dom.Text;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
+    private TextView mTextViewDone;
     private static final String TAG = "Main Activity"; // Using TAG constant for logging
     private TaskDbHelper mHelper;
     private ListView mTaskListView; // reference to the ListView created in activity_main.xml
@@ -35,6 +36,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mTextViewDone = (TextView) findViewById(R.id.textViewDone);
+        mTextViewDone.setText("");
 
         mHelper = new TaskDbHelper(this);
         mTaskListView = (ListView) findViewById(R.id.task_list);
@@ -89,8 +93,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateUI() {
+        isDatabaseEmpty();
         ArrayList<String> taskList = new ArrayList<>();
         SQLiteDatabase db = mHelper.getReadableDatabase();
+
         Cursor cursor = db.query(TaskContract.TaskEntry.TABLE,
                 new String[]{TaskContract.TaskEntry._ID, TaskContract.TaskEntry.COL_TASK_TITLE},
                 null, null, null, null, null);
@@ -113,6 +119,21 @@ public class MainActivity extends AppCompatActivity {
         }
 
         cursor.close();
+        db.close();
+    }
+
+    private void isDatabaseEmpty() {
+        SQLiteDatabase db = mHelper.getWritableDatabase();
+        String count = "SELECT count(*) FROM tasks";
+        Cursor mCursor = db.rawQuery(count, null);
+        mCursor.moveToFirst();
+        int icount = mCursor.getInt(0);
+        if (icount > 0) {
+            mTextViewDone.setText("Click on the \"Done\" button to remove task.");
+        } else {
+            mTextViewDone.setText("");
+        }
+        mCursor.close();
         db.close();
     }
 
