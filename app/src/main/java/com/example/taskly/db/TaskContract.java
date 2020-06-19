@@ -8,7 +8,8 @@ public class TaskContract {
 
     public class TaskEntry implements BaseColumns {
         public static final String TABLE = "tasks";
-
         public static final String COL_TASK_TITLE = "title";
+//        public static final String COL_TASK_DUEDATE = "duedate";
+//        public static final String COL_TASK_DUETIME = "duetime";
     }
 }

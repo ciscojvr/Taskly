@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.ContentValues;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -60,21 +61,32 @@ public class MainActivity extends AppCompatActivity {
             case R.id.action_add_task:
                 Log.d(TAG, "Adding a new task");
 
-                final EditText taskEditText = new EditText(this);
 
+                final View customLayout = getLayoutInflater().inflate(R.layout.activity_add_task, null);
                 AlertDialog dialog = new AlertDialog.Builder(this)
                         .setTitle("Add a new task")
                         .setMessage("What do you want to do next?")
-                        .setView(taskEditText)
+                        .setView(customLayout)
                         .setPositiveButton("Add", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                String task = String.valueOf(taskEditText.getText());
+                                EditText taskInfo = customLayout.findViewById(R.id.editText_taskInfo);
+                                EditText taskDueDate = customLayout.findViewById(R.id.editText_dateDue);
+                                EditText taskDueTime = customLayout.findViewById(R.id.editText_timeDue);
+
+                                String task = String.valueOf(taskInfo.getText());
+                                String dueDate = String.valueOf(taskDueDate.getText());
+                                String dueTime = String.valueOf(taskDueTime.getText());
+
                                 Log.d(TAG, "Task to add: " + task);
+                                Log.d(TAG, "Task due date: " + dueDate);
+                                Log.d(TAG, "Task due time: " + dueTime);
 
                                 SQLiteDatabase db = mHelper.getWritableDatabase();
                                 ContentValues values = new ContentValues();
                                 values.put(TaskContract.TaskEntry.COL_TASK_TITLE, task);
+//                                values.put(TaskContract.TaskEntry.COL_TASK_DUEDATE, dueDate);
+//                                values.put(TaskContract.TaskEntry.COL_TASK_DUETIME, dueTime);
                                 db.insertWithOnConflict(TaskContract.TaskEntry.TABLE,
                                         null,
                                         values,
@@ -86,6 +98,7 @@ public class MainActivity extends AppCompatActivity {
                         .setNegativeButton("Cancel", null)
                         .create();
                 dialog.show();
+
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -98,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
         SQLiteDatabase db = mHelper.getReadableDatabase();
 
         Cursor cursor = db.query(TaskContract.TaskEntry.TABLE,
-                new String[]{TaskContract.TaskEntry._ID, TaskContract.TaskEntry.COL_TASK_TITLE},
+                new String[]{TaskContract.TaskEntry._ID, TaskContract.TaskEntry.COL_TASK_TITLE, },
                 null, null, null, null, null);
         while(cursor.moveToNext()) {
             int idx = cursor.getColumnIndex(TaskContract.TaskEntry.COL_TASK_TITLE);
