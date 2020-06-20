@@ -6,7 +6,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.ContentValues;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -22,8 +21,6 @@ import android.widget.TextView;
 import com.example.taskly.db.TaskContract;
 import com.example.taskly.db.TaskDbHelper;
 
-import org.w3c.dom.Text;
-
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
@@ -31,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "Main Activity"; // Using TAG constant for logging
     private TaskDbHelper mHelper;
     private ListView mTaskListView; // reference to the ListView created in activity_main.xml
-    private ArrayAdapter<String> mAdapter; // ArrayAdapter will help populate the ListView with the data
+    private ArrayAdapter<Task> mAdapter; // ArrayAdapter will help populate the ListView with the data
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,8 +82,8 @@ public class MainActivity extends AppCompatActivity {
                                 SQLiteDatabase db = mHelper.getWritableDatabase();
                                 ContentValues values = new ContentValues();
                                 values.put(TaskContract.TaskEntry.COL_TASK_TITLE, task);
-//                                values.put(TaskContract.TaskEntry.COL_TASK_DUEDATE, dueDate);
-//                                values.put(TaskContract.TaskEntry.COL_TASK_DUETIME, dueTime);
+                                values.put(TaskContract.TaskEntry.COL_TASK_DATE, dueDate);
+                                values.put(TaskContract.TaskEntry.COL_TASK_TIME, dueTime);
                                 db.insertWithOnConflict(TaskContract.TaskEntry.TABLE,
                                         null,
                                         values,
@@ -107,23 +104,44 @@ public class MainActivity extends AppCompatActivity {
 
     private void updateUI() {
         isDatabaseEmpty();
-        ArrayList<String> taskList = new ArrayList<>();
+        ArrayList<Task> taskList = new ArrayList<>();
         SQLiteDatabase db = mHelper.getReadableDatabase();
 
-        Cursor cursor = db.query(TaskContract.TaskEntry.TABLE,
-                new String[]{TaskContract.TaskEntry._ID, TaskContract.TaskEntry.COL_TASK_TITLE, },
-                null, null, null, null, null);
+        Cursor cursor = db.query(
+                TaskContract.TaskEntry.TABLE,
+                new String[] {TaskContract.TaskEntry._ID, TaskContract.TaskEntry.COL_TASK_TITLE, TaskContract.TaskEntry.COL_TASK_DATE, TaskContract.TaskEntry.COL_TASK_TIME},
+                null,
+                null,
+                null,
+                null,
+                null);
+
         while(cursor.moveToNext()) {
-            int idx = cursor.getColumnIndex(TaskContract.TaskEntry.COL_TASK_TITLE);
-            taskList.add(cursor.getString(idx));
-            Log.d(TAG, "Task: " + cursor.getString(idx));
+
+            int idxTitle = cursor.getColumnIndex(TaskContract.TaskEntry.COL_TASK_TITLE);
+            String titleOfTask = cursor.getString((idxTitle));
+
+            int idxDueDate = cursor.getColumnIndex(TaskContract.TaskEntry.COL_TASK_DATE);
+            String dueDateOfTask = cursor.getString((idxDueDate));
+
+            int idxDueTime = cursor.getColumnIndex(TaskContract.TaskEntry.COL_TASK_TIME);
+            String dueTimeOfTask = cursor.getString((idxDueTime));
+
+            Task currentTask = new Task(titleOfTask, dueDateOfTask, dueTimeOfTask);
+
+            taskList.add(currentTask);
+            Log.d(
+                    TAG,
+                    "Task: " +
+                            currentTask.getTaskName() +
+                            " Due on: " +
+                            currentTask.getTaskDueDate() +
+                            " At: " +
+                            currentTask.getTaskDueTime());
         }
 
         if (mAdapter == null) {
-            mAdapter = new ArrayAdapter<>(this,
-                    R.layout.task_todo,
-                    R.id.task_title,
-                    taskList);
+            mAdapter = new TasksAdapter(this, taskList);
             mTaskListView.setAdapter(mAdapter);
         } else {
             mAdapter.clear();
