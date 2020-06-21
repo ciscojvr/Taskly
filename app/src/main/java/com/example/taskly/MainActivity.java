@@ -16,6 +16,8 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.example.taskly.db.TaskContract;
@@ -71,13 +73,19 @@ public class MainActivity extends AppCompatActivity {
                                 EditText taskDueDate = customLayout.findViewById(R.id.editText_dateDue);
                                 EditText taskDueTime = customLayout.findViewById(R.id.editText_timeDue);
 
+                                RadioGroup taskUrgencyGroup = customLayout.findViewById(R.id.radioGroup_urgency_levels);
+                                int taskUrgencyId = taskUrgencyGroup.getCheckedRadioButtonId();
+                                RadioButton taskUrgency = customLayout.findViewById(taskUrgencyId);
+
                                 String task = String.valueOf(taskInfo.getText());
                                 String dueDate = String.valueOf(taskDueDate.getText());
                                 String dueTime = String.valueOf(taskDueTime.getText());
+                                String urgency = taskUrgency.getText().toString();
 
                                 Log.d(TAG, "Task to add: " + task);
                                 Log.d(TAG, "Task due date: " + dueDate);
                                 Log.d(TAG, "Task due time: " + dueTime);
+                                Log.d(TAG, "Task urgency: " + urgency);
 
                                 SQLiteDatabase db = mHelper.getWritableDatabase();
                                 ContentValues values = new ContentValues();
