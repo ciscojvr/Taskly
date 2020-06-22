@@ -65,14 +65,14 @@
                 android:text="00:00pm" />
 
             <TextView
-                android:id="@+id/textView_ugency_label"
+                android:id="@+id/task_ugency_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="0"
                 android:text="  Urgency:   " />
 
             <TextView
-                android:id="@+id/textView_urgency"
+                android:id="@+id/task_urgency"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="0"

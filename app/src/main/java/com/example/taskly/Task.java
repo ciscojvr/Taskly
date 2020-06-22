@@ -5,11 +5,13 @@ public class Task {
     private String taskName;
     private String taskDueDate;
     private String taskDueTime;
+    private String taskUrgency;
 
-    public Task(String taskName, String taskDueDate, String taskDueTime) {
+    public Task(String taskName, String taskDueDate, String taskDueTime, String taskUrgency) {
         this.taskName = taskName;
         this.taskDueDate = taskDueDate;
         this.taskDueTime = taskDueTime;
+        this.taskUrgency = taskUrgency;
     }
 
     public String getTaskName() {
@@ -34,5 +36,13 @@ public class Task {
 
     public void setTaskDueTime(String taskDueTime) {
         this.taskDueTime = taskDueTime;
+    }
+
+    public String getTaskUrgency() {
+        return taskUrgency;
+    }
+
+    public void setTaskUrgency(String taskUrgency) {
+        this.taskUrgency = taskUrgency;
     }
 }
