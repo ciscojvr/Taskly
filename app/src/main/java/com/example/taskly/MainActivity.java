@@ -9,9 +9,6 @@ import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextUtils;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -26,7 +23,6 @@ import android.widget.TextView;
 import com.example.taskly.db.TaskContract;
 import com.example.taskly.db.TaskDbHelper;
 
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 
@@ -64,7 +60,6 @@ public class MainActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.action_add_task:
                 Log.d(TAG, "Adding a new task");
-
 
                 final View customLayout = getLayoutInflater().inflate(R.layout.activity_add_task, null);
                 final AlertDialog dialog = new AlertDialog.Builder(this)
@@ -113,11 +108,7 @@ public class MainActivity extends AppCompatActivity {
                 // Initially disabled the button
                 ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
 
-                EditText addedTaskInfo = (EditText)customLayout.findViewById(R.id.editText_taskInfo);
                 RadioGroup radioGroupUrgencies = (RadioGroup)customLayout.findViewById(R.id.radioGroup_urgency_levels);
-                RadioButton radioButtonUrgency = (RadioButton)customLayout.findViewById(radioGroupUrgencies.getCheckedRadioButtonId());
-
-                Log.d(TAG, "Radio Button ID is: " + radioButtonUrgency);
 
                 radioGroupUrgencies.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
                     @Override
@@ -125,7 +116,6 @@ public class MainActivity extends AppCompatActivity {
                         ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
                     }
                 });
-
 
                 return true;
             default:
