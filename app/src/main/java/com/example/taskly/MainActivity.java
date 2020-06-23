@@ -21,8 +21,6 @@ import android.widget.TextView;
 import com.example.taskly.db.TaskContract;
 import com.example.taskly.db.TaskDbHelper;
 
-import org.w3c.dom.Text;
-
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
@@ -30,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "Main Activity"; // Using TAG constant for logging
     private TaskDbHelper mHelper;
     private ListView mTaskListView; // reference to the ListView created in activity_main.xml
-    private ArrayAdapter<String> mAdapter; // ArrayAdapter will help populate the ListView with the data
+    private ArrayAdapter<Task> mAdapter; // ArrayAdapter will help populate the ListView with the data
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,21 +58,32 @@ public class MainActivity extends AppCompatActivity {
             case R.id.action_add_task:
                 Log.d(TAG, "Adding a new task");
 
-                final EditText taskEditText = new EditText(this);
 
+                final View customLayout = getLayoutInflater().inflate(R.layout.activity_add_task, null);
                 AlertDialog dialog = new AlertDialog.Builder(this)
                         .setTitle("Add a new task")
                         .setMessage("What do you want to do next?")
-                        .setView(taskEditText)
+                        .setView(customLayout)
                         .setPositiveButton("Add", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                String task = String.valueOf(taskEditText.getText());
+                                EditText taskInfo = customLayout.findViewById(R.id.editText_taskInfo);
+                                EditText taskDueDate = customLayout.findViewById(R.id.editText_dateDue);
+                                EditText taskDueTime = customLayout.findViewById(R.id.editText_timeDue);
+
+                                String task = String.valueOf(taskInfo.getText());
+                                String dueDate = String.valueOf(taskDueDate.getText());
+                                String dueTime = String.valueOf(taskDueTime.getText());
+
                                 Log.d(TAG, "Task to add: " + task);
+                                Log.d(TAG, "Task due date: " + dueDate);
+                                Log.d(TAG, "Task due time: " + dueTime);
 
                                 SQLiteDatabase db = mHelper.getWritableDatabase();
                                 ContentValues values = new ContentValues();
                                 values.put(TaskContract.TaskEntry.COL_TASK_TITLE, task);
+                                values.put(TaskContract.TaskEntry.COL_TASK_DATE, dueDate);
+                                values.put(TaskContract.TaskEntry.COL_TASK_TIME, dueTime);
                                 db.insertWithOnConflict(TaskContract.TaskEntry.TABLE,
                                         null,
                                         values,
@@ -86,6 +95,7 @@ public class MainActivity extends AppCompatActivity {
                         .setNegativeButton("Cancel", null)
                         .create();
                 dialog.show();
+
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -94,23 +104,44 @@ public class MainActivity extends AppCompatActivity {
 
     private void updateUI() {
         isDatabaseEmpty();
-        ArrayList<String> taskList = new ArrayList<>();
+        ArrayList<Task> taskList = new ArrayList<>();
         SQLiteDatabase db = mHelper.getReadableDatabase();
 
-        Cursor cursor = db.query(TaskContract.TaskEntry.TABLE,
-                new String[]{TaskContract.TaskEntry._ID, TaskContract.TaskEntry.COL_TASK_TITLE},
-                null, null, null, null, null);
+        Cursor cursor = db.query(
+                TaskContract.TaskEntry.TABLE,
+                new String[] {TaskContract.TaskEntry._ID, TaskContract.TaskEntry.COL_TASK_TITLE, TaskContract.TaskEntry.COL_TASK_DATE, TaskContract.TaskEntry.COL_TASK_TIME},
+                null,
+                null,
+                null,
+                null,
+                null);
+
         while(cursor.moveToNext()) {
-            int idx = cursor.getColumnIndex(TaskContract.TaskEntry.COL_TASK_TITLE);
-            taskList.add(cursor.getString(idx));
-            Log.d(TAG, "Task: " + cursor.getString(idx));
+
+            int idxTitle = cursor.getColumnIndex(TaskContract.TaskEntry.COL_TASK_TITLE);
+            String titleOfTask = cursor.getString((idxTitle));
+
+            int idxDueDate = cursor.getColumnIndex(TaskContract.TaskEntry.COL_TASK_DATE);
+            String dueDateOfTask = cursor.getString((idxDueDate));
+
+            int idxDueTime = cursor.getColumnIndex(TaskContract.TaskEntry.COL_TASK_TIME);
+            String dueTimeOfTask = cursor.getString((idxDueTime));
+
+            Task currentTask = new Task(titleOfTask, dueDateOfTask, dueTimeOfTask);
+
+            taskList.add(currentTask);
+            Log.d(
+                    TAG,
+                    "Task: " +
+                            currentTask.getTaskName() +
+                            " Due on: " +
+                            currentTask.getTaskDueDate() +
+                            " At: " +
+                            currentTask.getTaskDueTime());
         }
 
         if (mAdapter == null) {
-            mAdapter = new ArrayAdapter<>(this,
-                    R.layout.task_todo,
-                    R.id.task_title,
-                    taskList);
+            mAdapter = new TasksAdapter(this, taskList);
             mTaskListView.setAdapter(mAdapter);
         } else {
             mAdapter.clear();
