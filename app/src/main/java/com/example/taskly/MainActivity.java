@@ -16,10 +16,13 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.example.taskly.db.TaskContract;
 import com.example.taskly.db.TaskDbHelper;
+
 
 import java.util.ArrayList;
 
@@ -58,9 +61,8 @@ public class MainActivity extends AppCompatActivity {
             case R.id.action_add_task:
                 Log.d(TAG, "Adding a new task");
 
-
                 final View customLayout = getLayoutInflater().inflate(R.layout.activity_add_task, null);
-                AlertDialog dialog = new AlertDialog.Builder(this)
+                final AlertDialog dialog = new AlertDialog.Builder(this)
                         .setTitle("Add a new task")
                         .setMessage("What do you want to do next?")
                         .setView(customLayout)
@@ -71,19 +73,26 @@ public class MainActivity extends AppCompatActivity {
                                 EditText taskDueDate = customLayout.findViewById(R.id.editText_dateDue);
                                 EditText taskDueTime = customLayout.findViewById(R.id.editText_timeDue);
 
+                                RadioGroup taskUrgencyGroup = customLayout.findViewById(R.id.radioGroup_urgency_levels);
+                                int taskUrgencyId = taskUrgencyGroup.getCheckedRadioButtonId();
+                                RadioButton taskUrgency = customLayout.findViewById(taskUrgencyId);
+
                                 String task = String.valueOf(taskInfo.getText());
                                 String dueDate = String.valueOf(taskDueDate.getText());
                                 String dueTime = String.valueOf(taskDueTime.getText());
+                                String urgency = taskUrgency.getText().toString();
 
                                 Log.d(TAG, "Task to add: " + task);
                                 Log.d(TAG, "Task due date: " + dueDate);
                                 Log.d(TAG, "Task due time: " + dueTime);
+                                Log.d(TAG, "Task urgency: " + urgency);
 
                                 SQLiteDatabase db = mHelper.getWritableDatabase();
                                 ContentValues values = new ContentValues();
                                 values.put(TaskContract.TaskEntry.COL_TASK_TITLE, task);
                                 values.put(TaskContract.TaskEntry.COL_TASK_DATE, dueDate);
                                 values.put(TaskContract.TaskEntry.COL_TASK_TIME, dueTime);
+                                values.put(TaskContract.TaskEntry.COL_TASK_URGENCY, urgency);
                                 db.insertWithOnConflict(TaskContract.TaskEntry.TABLE,
                                         null,
                                         values,
@@ -95,6 +104,18 @@ public class MainActivity extends AppCompatActivity {
                         .setNegativeButton("Cancel", null)
                         .create();
                 dialog.show();
+
+                // Initially disabled the button
+                ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
+
+                RadioGroup radioGroupUrgencies = (RadioGroup)customLayout.findViewById(R.id.radioGroup_urgency_levels);
+
+                radioGroupUrgencies.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(RadioGroup group, int checkedId) {
+                        ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
+                    }
+                });
 
                 return true;
             default:
@@ -109,7 +130,7 @@ public class MainActivity extends AppCompatActivity {
 
         Cursor cursor = db.query(
                 TaskContract.TaskEntry.TABLE,
-                new String[] {TaskContract.TaskEntry._ID, TaskContract.TaskEntry.COL_TASK_TITLE, TaskContract.TaskEntry.COL_TASK_DATE, TaskContract.TaskEntry.COL_TASK_TIME},
+                new String[] {TaskContract.TaskEntry._ID, TaskContract.TaskEntry.COL_TASK_TITLE, TaskContract.TaskEntry.COL_TASK_DATE, TaskContract.TaskEntry.COL_TASK_TIME, TaskContract.TaskEntry.COL_TASK_URGENCY},
                 null,
                 null,
                 null,
@@ -127,7 +148,10 @@ public class MainActivity extends AppCompatActivity {
             int idxDueTime = cursor.getColumnIndex(TaskContract.TaskEntry.COL_TASK_TIME);
             String dueTimeOfTask = cursor.getString((idxDueTime));
 
-            Task currentTask = new Task(titleOfTask, dueDateOfTask, dueTimeOfTask);
+            int idxUrgency = cursor.getColumnIndex(TaskContract.TaskEntry.COL_TASK_URGENCY);
+            String urgencyOfTask = cursor.getString((idxUrgency));
+
+            Task currentTask = new Task(titleOfTask, dueDateOfTask, dueTimeOfTask, urgencyOfTask);
 
             taskList.add(currentTask);
             Log.d(
@@ -137,7 +161,10 @@ public class MainActivity extends AppCompatActivity {
                             " Due on: " +
                             currentTask.getTaskDueDate() +
                             " At: " +
-                            currentTask.getTaskDueTime());
+                            currentTask.getTaskDueTime() +
+                            " With Urgency: " +
+                            currentTask.getTaskUrgency()
+                    );
         }
 
         if (mAdapter == null) {

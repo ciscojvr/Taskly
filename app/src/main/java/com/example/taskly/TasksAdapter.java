@@ -43,6 +43,9 @@ public class TasksAdapter extends ArrayAdapter<Task> {
             TextView taskDueTime = (TextView) listItem.findViewById(R.id.task_due_time);
             taskDueTime.setText(currentTask.getTaskDueTime());
 
+            TextView taskUrgency = (TextView) listItem.findViewById(R.id.task_urgency);
+            taskUrgency.setText(currentTask.getTaskUrgency());
+
             return listItem;
     }
 }
