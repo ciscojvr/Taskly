@@ -17,6 +17,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
+            android:gravity="center"
+            android:hint="What will you accomplish today..."
             android:inputType="textPersonName" />
 
         <LinearLayout
@@ -38,6 +40,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:ems="10"
+                android:gravity="center"
+                android:hint="format: 01/01/2020"
                 android:inputType="date" />
 
         </LinearLayout>
@@ -61,6 +65,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:ems="10"
+                android:gravity="center"
+                android:hint="format: 10:45pm"
                 android:inputType="time" />
 
         </LinearLayout>
