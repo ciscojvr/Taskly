@@ -1,17 +1,23 @@
 package com.example.taskly;
 
+import com.google.android.gms.maps.model.LatLng;
+
 public class Task {
 
     private String taskName;
     private String taskDueDate;
     private String taskDueTime;
     private String taskUrgency;
+    private LatLng taskLocation;
+    private double taskLocationRadius;
 
-    public Task(String taskName, String taskDueDate, String taskDueTime, String taskUrgency) {
+    public Task(String taskName, String taskDueDate, String taskDueTime, String taskUrgency, LatLng taskLocation, double taskLocationRadius) {
         this.taskName = taskName;
         this.taskDueDate = taskDueDate;
         this.taskDueTime = taskDueTime;
         this.taskUrgency = taskUrgency;
+        this.taskLocation = taskLocation;
+        this.taskLocationRadius = taskLocationRadius;
     }
 
     public String getTaskName() {
@@ -45,4 +51,12 @@ public class Task {
     public void setTaskUrgency(String taskUrgency) {
         this.taskUrgency = taskUrgency;
     }
+
+    public LatLng getTaskLocation() { return taskLocation; }
+
+    public void setTaskLocation(LatLng taskLocation) { this.taskLocation = taskLocation; }
+
+    public double getTaskLocationRadius() { return taskLocationRadius; }
+
+    public void setTaskLocationRadius(double taskLocationRadius) { this.taskLocationRadius = taskLocationRadius; }
 }

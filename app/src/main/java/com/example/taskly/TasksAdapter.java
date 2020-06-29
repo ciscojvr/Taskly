@@ -46,6 +46,12 @@ public class TasksAdapter extends ArrayAdapter<Task> {
             TextView taskUrgency = (TextView) listItem.findViewById(R.id.task_urgency);
             taskUrgency.setText(currentTask.getTaskUrgency());
 
+            TextView taskLocationLatLng = (TextView) listItem.findViewById(R.id.task_location);
+            taskLocationLatLng.setText(String.valueOf(currentTask.getTaskLocation()));
+
+            TextView taskLocationRadius = (TextView) listItem.findViewById(R.id.task_location_radius);
+            taskLocationRadius.setText(String.valueOf(currentTask.getTaskLocationRadius()));
+
             return listItem;
     }
 }

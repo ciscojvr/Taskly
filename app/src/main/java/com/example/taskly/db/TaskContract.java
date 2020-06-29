@@ -12,5 +12,8 @@ public class TaskContract {
         public static final String COL_TASK_DATE = "date";
         public static final String COL_TASK_TIME = "time";
         public static final String COL_TASK_URGENCY = "urgency";
+        public static final String COL_TASK_LOCATION_LAT = "locationLat";
+        public static final String COL_TASK_LOCATION_LNG = "locationLng";
+        public static final String COL_TASK_LOCATION_RADIUS = "locationRadius";
     }
 }
