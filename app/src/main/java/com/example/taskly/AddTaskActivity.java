@@ -25,6 +25,9 @@ public class AddTaskActivity extends AppCompatActivity {
     EditText enteredTask;
     EditText enteredDueDate;
     EditText enteredDueTime;
+    EditText enteredLocationLat;
+    EditText enteredLocationLng;
+    EditText enteredLocationRadius;
     Button addTaskButton;
     Button cancelAddTaskButton;
 
@@ -36,6 +39,9 @@ public class AddTaskActivity extends AppCompatActivity {
         enteredTask = (EditText) findViewById(R.id.editText_taskInfo);
         enteredDueDate = (EditText) findViewById(R.id.editText_dateDue);
         enteredDueTime = (EditText) findViewById(R.id.editText_timeDue);
+        enteredLocationLat = (EditText) findViewById(R.id.editText_locationLat);
+        enteredLocationLng = (EditText) findViewById(R.id.editText_locationLng);
+        enteredLocationRadius = (EditText) findViewById(R.id.editText_locationRadius);
 
         Log.d(null,"onCreate within AddTask called");
     }

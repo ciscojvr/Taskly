@@ -22,6 +22,7 @@ import android.widget.TextView;
 
 import com.example.taskly.db.TaskContract;
 import com.example.taskly.db.TaskDbHelper;
+import com.google.android.gms.maps.model.LatLng;
 
 
 import java.util.ArrayList;
@@ -72,6 +73,9 @@ public class MainActivity extends AppCompatActivity {
                                 EditText taskInfo = customLayout.findViewById(R.id.editText_taskInfo);
                                 EditText taskDueDate = customLayout.findViewById(R.id.editText_dateDue);
                                 EditText taskDueTime = customLayout.findViewById(R.id.editText_timeDue);
+                                EditText taskLocationLat = customLayout.findViewById(R.id.editText_locationLat);
+                                EditText taskLocationLng = customLayout.findViewById(R.id.editText_locationLng);
+                                EditText taskLocationRadius = customLayout.findViewById(R.id.editText_locationRadius);
 
                                 RadioGroup taskUrgencyGroup = customLayout.findViewById(R.id.radioGroup_urgency_levels);
                                 int taskUrgencyId = taskUrgencyGroup.getCheckedRadioButtonId();
@@ -81,11 +85,17 @@ public class MainActivity extends AppCompatActivity {
                                 String dueDate = String.valueOf(taskDueDate.getText());
                                 String dueTime = String.valueOf(taskDueTime.getText());
                                 String urgency = taskUrgency.getText().toString();
+                                String locationLat = String.valueOf(taskLocationLat.getText());
+                                String locationLng = String.valueOf(taskLocationLng.getText());
+                                String locationRadius = String.valueOf(taskLocationRadius.getText());
 
                                 Log.d(TAG, "Task to add: " + task);
                                 Log.d(TAG, "Task due date: " + dueDate);
                                 Log.d(TAG, "Task due time: " + dueTime);
                                 Log.d(TAG, "Task urgency: " + urgency);
+                                Log.d(TAG, "Task Location (Lat): " + locationLat);
+                                Log.d(TAG, "Task Location (Lng): " + locationLng);
+                                Log.d(TAG, "Task Location Radius (m): " + locationRadius);
 
                                 SQLiteDatabase db = mHelper.getWritableDatabase();
                                 ContentValues values = new ContentValues();
@@ -93,6 +103,9 @@ public class MainActivity extends AppCompatActivity {
                                 values.put(TaskContract.TaskEntry.COL_TASK_DATE, dueDate);
                                 values.put(TaskContract.TaskEntry.COL_TASK_TIME, dueTime);
                                 values.put(TaskContract.TaskEntry.COL_TASK_URGENCY, urgency);
+                                values.put(TaskContract.TaskEntry.COL_TASK_LOCATION_LAT, locationLat);
+                                values.put(TaskContract.TaskEntry.COL_TASK_LOCATION_LNG, locationLng);
+                                values.put(TaskContract.TaskEntry.COL_TASK_LOCATION_RADIUS, locationRadius);
                                 db.insertWithOnConflict(TaskContract.TaskEntry.TABLE,
                                         null,
                                         values,
@@ -130,7 +143,16 @@ public class MainActivity extends AppCompatActivity {
 
         Cursor cursor = db.query(
                 TaskContract.TaskEntry.TABLE,
-                new String[] {TaskContract.TaskEntry._ID, TaskContract.TaskEntry.COL_TASK_TITLE, TaskContract.TaskEntry.COL_TASK_DATE, TaskContract.TaskEntry.COL_TASK_TIME, TaskContract.TaskEntry.COL_TASK_URGENCY},
+                new String[] {
+                        TaskContract.TaskEntry._ID,
+                        TaskContract.TaskEntry.COL_TASK_TITLE,
+                        TaskContract.TaskEntry.COL_TASK_DATE,
+                        TaskContract.TaskEntry.COL_TASK_TIME,
+                        TaskContract.TaskEntry.COL_TASK_URGENCY,
+                        TaskContract.TaskEntry.COL_TASK_LOCATION_LAT,
+                        TaskContract.TaskEntry.COL_TASK_LOCATION_LNG,
+                        TaskContract.TaskEntry.COL_TASK_LOCATION_RADIUS
+                },
                 null,
                 null,
                 null,
@@ -151,7 +173,18 @@ public class MainActivity extends AppCompatActivity {
             int idxUrgency = cursor.getColumnIndex(TaskContract.TaskEntry.COL_TASK_URGENCY);
             String urgencyOfTask = cursor.getString((idxUrgency));
 
-            Task currentTask = new Task(titleOfTask, dueDateOfTask, dueTimeOfTask, urgencyOfTask);
+            int idxLocationLat = cursor.getColumnIndex(TaskContract.TaskEntry.COL_TASK_LOCATION_LAT);
+            String locationLatOfTask = cursor.getString((idxLocationLat));
+
+            int idxLocationLng = cursor.getColumnIndex(TaskContract.TaskEntry.COL_TASK_LOCATION_LNG);
+            String locationLngOfTask = cursor.getString((idxLocationLng));
+
+            int idxLocationRadius = cursor.getColumnIndex(TaskContract.TaskEntry.COL_TASK_LOCATION_RADIUS);
+            String locationRadiusOfTask = cursor.getString((idxLocationRadius));
+
+            LatLng locationLatLng = new LatLng(Double.parseDouble(locationLatOfTask), Double.parseDouble(locationLngOfTask));
+            double locationRadius = Double.parseDouble(locationRadiusOfTask);
+            Task currentTask = new Task(titleOfTask, dueDateOfTask, dueTimeOfTask, urgencyOfTask, locationLatLng, locationRadius);
 
             taskList.add(currentTask);
             Log.d(
@@ -163,7 +196,9 @@ public class MainActivity extends AppCompatActivity {
                             " At: " +
                             currentTask.getTaskDueTime() +
                             " With Urgency: " +
-                            currentTask.getTaskUrgency()
+                            currentTask.getTaskUrgency() +
+                            " Location/Radius: " +
+                            currentTask.getTaskLocation() + "/" + currentTask.getTaskLocationRadius()
                     );
         }
 
