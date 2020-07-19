@@ -18,8 +18,9 @@
             android:layout_height="wrap_content"
             android:ems="10"
             android:gravity="center"
-            android:hint="What will you accomplish today..."
-            android:inputType="textPersonName" />
+            android:hint="@string/what_will_you_accomplish_today"
+            android:inputType="textPersonName"
+            android:textStyle="bold" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -32,7 +33,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="0"
                 android:onClick="onClick"
-                android:text="Add Date" />
+                android:text="@string/add_date"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/textView_dateDue"
@@ -54,7 +56,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="0"
                 android:onClick="onClick"
-                android:text="Add Time" />
+                android:text="@string/add_time"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/textView_timeDue"
@@ -78,7 +81,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="Urgency:" />
+                android:text="@string/urgency"
+                android:textStyle="bold" />
 
             <RadioGroup
                 android:id="@+id/radioGroup_urgency_levels"
@@ -92,19 +96,19 @@
                     android:id="@+id/radioButton_urgency_low"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Low" />
+                    android:text="@string/low" />
 
                 <RadioButton
                     android:id="@+id/radioButton_urgency_medium"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Medium" />
+                    android:text="@string/medium" />
 
                 <RadioButton
                     android:id="@+id/radioButton_urgency_high"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="High" />
+                    android:text="@string/high" />
             </RadioGroup>
         </LinearLayout>
 
@@ -122,7 +126,8 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:paddingVertical="10dp"
-                android:text="Location:" />
+                android:text="@string/location"
+                android:textStyle="bold" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -135,31 +140,38 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:orientation="horizontal">
+
                     <EditText
                         android:id="@+id/editText_locationLat"
                         android:layout_width="100dp"
                         android:layout_height="wrap_content"
                         android:ems="10"
-                        android:hint="Latitude"
-                        android:inputType="number" />
+                        android:gravity="center"
+                        android:hint="@string/latitude"
+                        android:inputType="number"
+                        android:textSize="14sp" />
+
                     <EditText
                         android:id="@+id/editText_locationLng"
                         android:layout_width="100dp"
                         android:layout_height="wrap_content"
                         android:ems="10"
-                        android:hint="Longitude"
-                        android:inputType="number" />
+                        android:gravity="center"
+                        android:hint="@string/longitude"
+                        android:inputType="number"
+                        android:textSize="14sp" />
                 </LinearLayout>
 
                 <EditText
                     android:id="@+id/editText_locationRadius"
-                    android:layout_width="100dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:ems="10"
                     android:gravity="center"
-                    android:hint="Location Size (m)"
-                    android:inputType="number" />
+                    android:hint="@string/location_size_m"
+                    android:inputType="number"
+                    android:textSize="14sp" />
 
             </LinearLayout>
 
@@ -177,15 +189,18 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:onClick="onClick"
-                android:text="Cancel" />
+                android:text="@string/cancel"
+                android:textStyle="bold" />
 
             <Button
                 android:id="@+id/button_addTask"
+                style="buttonbarst"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:onClick="onClick"
-                android:text="Add Task" />
+                android:text="@string/add_task"
+                android:textStyle="bold" />
         </LinearLayout>
 
     </LinearLayout>

@@ -1,3 +1,16 @@
 <resources>
     <string name="app_name">Taskly</string>
+    <string name="add_date">Add Date</string>
+    <string name="add_time">Add Time</string>
+    <string name="add_task">Add Task</string>
+    <string name="cancel">Cancel</string>
+    <string name="urgency">Urgency:</string>
+    <string name="location">Location:</string>
+    <string name="longitude">Longitude</string>
+    <string name="latitude">Latitude</string>
+    <string name="location_size_m">Location Size (m)</string>
+    <string name="high">High</string>
+    <string name="medium">Medium</string>
+    <string name="low">Low</string>
+    <string name="what_will_you_accomplish_today">What will you accomplish today...</string>
 </resources>

@@ -40,7 +40,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="0"
-                android:text="Due on:   " />
+                android:text="Due on:   "
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/task_due_date"
@@ -55,7 +56,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="0"
-                android:text="  At:   " />
+                android:text="  At: "
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/task_due_time"
@@ -69,7 +71,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="0"
-                android:text="  Urgency:   " />
+                android:text="  Urgency:   "
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/task_urgency"
@@ -90,7 +93,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="0"
-                android:text="Location (Lat/Lng):"/>
+                android:text="Location:  "
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/task_location"
@@ -104,7 +108,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="0"
-                android:text="Radius (m):"/>
+                android:text="  Radius (m):  "
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/task_location_radius"
