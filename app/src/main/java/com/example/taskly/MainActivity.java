@@ -1,11 +1,8 @@
 package com.example.taskly;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-
-import android.content.ContentValues;
-import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -14,16 +11,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.example.taskly.db.TaskContract;
 import com.example.taskly.db.TaskDbHelper;
 import com.google.android.gms.maps.model.LatLng;
-
 
 import java.util.ArrayList;
 
@@ -61,76 +54,8 @@ public class MainActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.action_add_task:
                 Log.d(TAG, "Adding a new task");
-
-                final View customLayout = getLayoutInflater().inflate(R.layout.activity_add_task, null);
-                final AlertDialog dialog = new AlertDialog.Builder(this)
-                        .setTitle("Add a new task")
-                        .setMessage("What do you want to do next?")
-                        .setView(customLayout)
-                        .setPositiveButton("Add", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                EditText taskInfo = customLayout.findViewById(R.id.editText_taskInfo);
-                                EditText taskDueDate = customLayout.findViewById(R.id.editText_dateDue);
-                                EditText taskDueTime = customLayout.findViewById(R.id.editText_timeDue);
-                                EditText taskLocationLat = customLayout.findViewById(R.id.editText_locationLat);
-                                EditText taskLocationLng = customLayout.findViewById(R.id.editText_locationLng);
-                                EditText taskLocationRadius = customLayout.findViewById(R.id.editText_locationRadius);
-
-                                RadioGroup taskUrgencyGroup = customLayout.findViewById(R.id.radioGroup_urgency_levels);
-                                int taskUrgencyId = taskUrgencyGroup.getCheckedRadioButtonId();
-                                RadioButton taskUrgency = customLayout.findViewById(taskUrgencyId);
-
-                                String task = String.valueOf(taskInfo.getText());
-                                String dueDate = String.valueOf(taskDueDate.getText());
-                                String dueTime = String.valueOf(taskDueTime.getText());
-                                String urgency = taskUrgency.getText().toString();
-                                String locationLat = String.valueOf(taskLocationLat.getText());
-                                String locationLng = String.valueOf(taskLocationLng.getText());
-                                String locationRadius = String.valueOf(taskLocationRadius.getText());
-
-                                Log.d(TAG, "Task to add: " + task);
-                                Log.d(TAG, "Task due date: " + dueDate);
-                                Log.d(TAG, "Task due time: " + dueTime);
-                                Log.d(TAG, "Task urgency: " + urgency);
-                                Log.d(TAG, "Task Location (Lat): " + locationLat);
-                                Log.d(TAG, "Task Location (Lng): " + locationLng);
-                                Log.d(TAG, "Task Location Radius (m): " + locationRadius);
-
-                                SQLiteDatabase db = mHelper.getWritableDatabase();
-                                ContentValues values = new ContentValues();
-                                values.put(TaskContract.TaskEntry.COL_TASK_TITLE, task);
-                                values.put(TaskContract.TaskEntry.COL_TASK_DATE, dueDate);
-                                values.put(TaskContract.TaskEntry.COL_TASK_TIME, dueTime);
-                                values.put(TaskContract.TaskEntry.COL_TASK_URGENCY, urgency);
-                                values.put(TaskContract.TaskEntry.COL_TASK_LOCATION_LAT, locationLat);
-                                values.put(TaskContract.TaskEntry.COL_TASK_LOCATION_LNG, locationLng);
-                                values.put(TaskContract.TaskEntry.COL_TASK_LOCATION_RADIUS, locationRadius);
-                                db.insertWithOnConflict(TaskContract.TaskEntry.TABLE,
-                                        null,
-                                        values,
-                                        SQLiteDatabase.CONFLICT_REPLACE);
-                                db.close();
-                                updateUI();
-                            }
-                        })
-                        .setNegativeButton("Cancel", null)
-                        .create();
-                dialog.show();
-
-                // Initially disabled the button
-                ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
-
-                RadioGroup radioGroupUrgencies = (RadioGroup)customLayout.findViewById(R.id.radioGroup_urgency_levels);
-
-                radioGroupUrgencies.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-                    @Override
-                    public void onCheckedChanged(RadioGroup group, int checkedId) {
-                        ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
-                    }
-                });
-
-                return true;
+                Intent myIntent = new Intent(this, AddTaskActivity.class);
+                this.startActivity(myIntent);
             default:
                 return super.onOptionsItemSelected(item);
         }

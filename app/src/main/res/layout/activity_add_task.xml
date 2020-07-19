@@ -23,26 +23,23 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/button_addDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0"
+                android:onClick="onClick"
+                android:text="Add Date" />
 
             <TextView
                 android:id="@+id/textView_dateDue"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:text="Date Due:" />
-
-            <EditText
-                android:id="@+id/editText_dateDue"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:ems="10"
-                android:gravity="center"
-                android:hint="format: 01/01/2020"
-                android:inputType="date" />
+                android:layout_weight="2"
+                android:gravity="center" />
 
         </LinearLayout>
 
@@ -51,23 +48,20 @@
             android:layout_height="match_parent"
             android:orientation="horizontal">
 
+            <Button
+                android:id="@+id/button_addTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0"
+                android:onClick="onClick"
+                android:text="Add Time" />
+
             <TextView
                 android:id="@+id/textView_timeDue"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:gravity="center"
-                android:text="Time Due:" />
-
-            <EditText
-                android:id="@+id/editText_timeDue"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:ems="10"
-                android:gravity="center"
-                android:hint="format: 10:45pm"
-                android:inputType="time" />
+                android:gravity="center" />
 
         </LinearLayout>
 
@@ -169,6 +163,29 @@
 
             </LinearLayout>
 
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/button_cancel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:onClick="onClick"
+                android:text="Cancel" />
+
+            <Button
+                android:id="@+id/button_addTask"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:onClick="onClick"
+                android:text="Add Task" />
         </LinearLayout>
 
     </LinearLayout>
