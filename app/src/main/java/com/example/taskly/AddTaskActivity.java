@@ -237,7 +237,7 @@ public class AddTaskActivity extends AppCompatActivity implements DatePickerDial
     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
         Calendar c = Calendar.getInstance();
         c.set(Calendar.YEAR, year);
-        c.set(Calendar.MONTH, year);
+        c.set(Calendar.MONTH, month);
         c.set(Calendar.DAY_OF_MONTH, dayOfMonth);
         String currentDateString = DateFormat.getDateInstance(DateFormat.FULL).format(c.getTime());
         dateLabel.setText(currentDateString);
@@ -245,7 +245,7 @@ public class AddTaskActivity extends AppCompatActivity implements DatePickerDial
 
     @Override
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-        timeLabel.setText(hourOfDay + ": " + minute);
+        timeLabel.setText(hourOfDay + ":" + minute);
     }
 
     public void addTask() {
