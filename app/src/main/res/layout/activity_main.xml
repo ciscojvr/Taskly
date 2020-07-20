@@ -11,6 +11,13 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
+        <SearchView
+            android:id="@+id/searchView_tasks"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            android:queryHint="Search for your tasks by name..." />
+
         <TextView
             android:id="@+id/textViewAdd"
             android:layout_width="match_parent"
