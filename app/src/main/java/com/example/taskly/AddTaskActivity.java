@@ -40,7 +40,7 @@ public class AddTaskActivity extends AppCompatActivity implements DatePickerDial
     Button addTimeButton;
     TextView timeLabel;
 
-    EditText taskLocationLat, taskLocationLong, taskLocationRadius;
+    private static EditText taskLocationLat, taskLocationLong, taskLocationRadius;
 
     Button cancelButton, addTaskButton;
 
@@ -310,5 +310,11 @@ public class AddTaskActivity extends AppCompatActivity implements DatePickerDial
 
         taskLocationLat.setText(newLat);
         taskLocationLong.setText(newLng);
+    }
+
+    public static void SetInfoFromLocationChooser(double lat, double lng) {
+        taskLocationLat.setText(String.valueOf(lat));
+        taskLocationLong.setText(String.valueOf(lng));
+        taskLocationRadius.setText("1");
     }
 }

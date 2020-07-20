@@ -27,7 +27,7 @@ import java.util.Locale;
 public class ChooseLocationActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     public static Marker LastMarker;
-    public static LatLng LastLatLng;
+    public static LatLng LastLatLng = new LatLng(1.0, 1.0);
 
     private GoogleMap mMap;
     private Button endButton;
@@ -45,6 +45,7 @@ public class ChooseLocationActivity extends AppCompatActivity implements OnMapRe
         endButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                AddTaskActivity.SetInfoFromLocationChooser(LastLatLng.latitude, LastLatLng.longitude);
                 finish();
             }
         });
