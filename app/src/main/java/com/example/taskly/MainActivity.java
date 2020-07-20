@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.SearchView;
 import android.widget.TextView;
 
 import com.example.taskly.db.TaskContract;
@@ -27,6 +28,8 @@ public class MainActivity extends AppCompatActivity {
     private ListView mTaskListView; // reference to the ListView created in activity_main.xml
     private ArrayAdapter<Task> mAdapter; // ArrayAdapter will help populate the ListView with the data
 
+    SearchView taskSearchView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,6 +40,21 @@ public class MainActivity extends AppCompatActivity {
 
         mHelper = new TaskDbHelper(this);
         mTaskListView = (ListView) findViewById(R.id.task_list);
+
+        taskSearchView = (SearchView) findViewById(R.id.searchView_tasks);
+        taskSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                searchForTask(query);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                searchForTask(newText);
+                return true;
+            }
+        });
 
         updateUI();
     }
@@ -140,6 +158,85 @@ public class MainActivity extends AppCompatActivity {
         db.close();
     }
 
+    private void updateUIWith(String taskName) {
+        isDatabaseEmpty();
+        ArrayList<Task> taskList = new ArrayList<>();
+        SQLiteDatabase db = mHelper.getReadableDatabase();
+
+        Cursor cursor = db.query(
+                TaskContract.TaskEntry.TABLE,
+                new String[] {
+                        TaskContract.TaskEntry._ID,
+                        TaskContract.TaskEntry.COL_TASK_TITLE,
+                        TaskContract.TaskEntry.COL_TASK_DATE,
+                        TaskContract.TaskEntry.COL_TASK_TIME,
+                        TaskContract.TaskEntry.COL_TASK_URGENCY,
+                        TaskContract.TaskEntry.COL_TASK_LOCATION_LAT,
+                        TaskContract.TaskEntry.COL_TASK_LOCATION_LNG,
+                        TaskContract.TaskEntry.COL_TASK_LOCATION_RADIUS
+                },
+                TaskContract.TaskEntry.COL_TASK_TITLE + " LIKE '%" + taskName + "%' ",
+                null,
+                null,
+                null,
+                null);
+
+        while(cursor.moveToNext()) {
+
+            int idxTitle = cursor.getColumnIndex(TaskContract.TaskEntry.COL_TASK_TITLE);
+            String titleOfTask = cursor.getString((idxTitle));
+
+            int idxDueDate = cursor.getColumnIndex(TaskContract.TaskEntry.COL_TASK_DATE);
+            String dueDateOfTask = cursor.getString((idxDueDate));
+
+            int idxDueTime = cursor.getColumnIndex(TaskContract.TaskEntry.COL_TASK_TIME);
+            String dueTimeOfTask = cursor.getString((idxDueTime));
+
+            int idxUrgency = cursor.getColumnIndex(TaskContract.TaskEntry.COL_TASK_URGENCY);
+            String urgencyOfTask = cursor.getString((idxUrgency));
+
+            int idxLocationLat = cursor.getColumnIndex(TaskContract.TaskEntry.COL_TASK_LOCATION_LAT);
+            String locationLatOfTask = cursor.getString((idxLocationLat));
+
+            int idxLocationLng = cursor.getColumnIndex(TaskContract.TaskEntry.COL_TASK_LOCATION_LNG);
+            String locationLngOfTask = cursor.getString((idxLocationLng));
+
+            int idxLocationRadius = cursor.getColumnIndex(TaskContract.TaskEntry.COL_TASK_LOCATION_RADIUS);
+            String locationRadiusOfTask = cursor.getString((idxLocationRadius));
+
+            LatLng locationLatLng = new LatLng(Double.parseDouble(locationLatOfTask), Double.parseDouble(locationLngOfTask));
+            double locationRadius = Double.parseDouble(locationRadiusOfTask);
+            Task currentTask = new Task(titleOfTask, dueDateOfTask, dueTimeOfTask, urgencyOfTask, locationLatLng, locationRadius);
+
+            taskList.add(currentTask);
+            Log.d(
+                    TAG,
+                    "Task: " +
+                            currentTask.getTaskName() +
+                            " Due on: " +
+                            currentTask.getTaskDueDate() +
+                            " At: " +
+                            currentTask.getTaskDueTime() +
+                            " With Urgency: " +
+                            currentTask.getTaskUrgency() +
+                            " Location/Radius: " +
+                            currentTask.getTaskLocation() + "/" + currentTask.getTaskLocationRadius()
+            );
+        }
+
+        if (mAdapter == null) {
+            mAdapter = new TasksAdapter(this, taskList);
+            mTaskListView.setAdapter(mAdapter);
+        } else {
+            mAdapter.clear();
+            mAdapter.addAll(taskList);
+            mAdapter.notifyDataSetChanged();
+        }
+
+        cursor.close();
+        db.close();
+    }
+
     private void isDatabaseEmpty() {
         SQLiteDatabase db = mHelper.getWritableDatabase();
         String count = "SELECT count(*) FROM tasks";
@@ -165,5 +262,22 @@ public class MainActivity extends AppCompatActivity {
                 new String[]{task});
         db.close();
         updateUI();
+    }
+
+    public void searchForTask(String task) {
+        StringBuilder sb = new StringBuilder();
+        SQLiteDatabase db = mHelper.getWritableDatabase();
+        Cursor cursor = db.query(TaskContract.TaskEntry.TABLE, null, TaskContract.TaskEntry.COL_TASK_TITLE + " LIKE '%" + task + "%' ", null, null, null, null);
+        while (cursor.moveToNext()) {
+            sb.append(cursor.getString(cursor.getColumnIndex(TaskContract.TaskEntry.COL_TASK_TITLE)));
+            sb.append("\n");
+        }
+        if (cursor.getCount() < 1) {
+            Log.d(TAG, "No tasks found matching the search criteria.");
+        } else {
+            Log.d(TAG, "Search results:\n" + sb.toString());
+        }
+
+        updateUIWith(task);
     }
 }
