@@ -1,8 +1,12 @@
 package com.example.taskly;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -65,6 +69,9 @@ public class ChooseLocationActivity extends AppCompatActivity implements OnMapRe
         float zoom = 13;
         mMap.addMarker(new MarkerOptions().position(atlanta).title("Marker in Atlanta"));
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(atlanta, zoom));
+        mMap.getUiSettings().setZoomControlsEnabled(true);
+
+        getLocationPermission();
 
         setMapLongClick(googleMap);
         setPoiClick(googleMap);
@@ -104,5 +111,18 @@ public class ChooseLocationActivity extends AppCompatActivity implements OnMapRe
                 LastLatLng = poi.latLng;
             }
         });
+    }
+
+    private void getLocationPermission() {
+        boolean m_locationPermissionGranted = false;
+        if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            m_locationPermissionGranted = true;
+        }
+        else {
+            ActivityCompat.requestPermissions(this,
+                    new String[] {Manifest.permission.ACCESS_FINE_LOCATION},
+                    1);
+        }
     }
 }
