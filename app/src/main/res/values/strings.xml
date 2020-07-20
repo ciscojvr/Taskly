@@ -13,4 +13,17 @@
     <string name="medium">Medium</string>
     <string name="low">Low</string>
     <string name="what_will_you_accomplish_today">What will you accomplish today...</string>
+    <string name="title_activity_completed_tasks">CompletedTasksActivity</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+
+    <string name="hello_first_fragment">Hello first fragment</string>
+    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+    <string name="click_on_the_icon_to_add_a_task">Click on the +icon to add a task.</string>
+    <string name="click_on_the_done_button_to_remove_task">Click on the Donebutton to remove task.</string>
+    <string name="show_completed_tasks">Show Completed Tasks</string>
+    <string name="show_incomplete_tasks">Show Incomplete Tasks</string>
 </resources>

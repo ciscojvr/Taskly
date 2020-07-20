@@ -23,14 +23,23 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text='Click on the "+" icon to add a task.' />
+            android:text="@string/click_on_the_icon_to_add_a_task" />
 
         <TextView
             android:id="@+id/textViewDone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text='Click on the "Done" button to remove task.' />
+            android:text="@string/click_on_the_done_button_to_remove_task" />
+
+        <Button
+            android:id="@+id/button_showCompletedTasks"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:onClick="showAllCompletedTasks"
+            android:text="@string/show_completed_tasks" />
 
         <ListView
             android:id="@+id/task_list"

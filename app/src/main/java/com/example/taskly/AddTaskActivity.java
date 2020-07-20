@@ -264,6 +264,8 @@ public class AddTaskActivity extends AppCompatActivity implements DatePickerDial
         String locationLong = String.valueOf(taskLocationLong.getText());
         String locationRadius = String.valueOf(taskLocationRadius.getText());
 
+        String completion = "incomplete";
+
         Log.d(TAG, "Task to add: " + task);
         Log.d(TAG, "Task due date: " + dueDate);
         Log.d(TAG, "Task due time: " + dueTime);
@@ -281,6 +283,7 @@ public class AddTaskActivity extends AppCompatActivity implements DatePickerDial
         values.put(TaskContract.TaskEntry.COL_TASK_LOCATION_LAT, locationLat);
         values.put(TaskContract.TaskEntry.COL_TASK_LOCATION_LNG, locationLong);
         values.put(TaskContract.TaskEntry.COL_TASK_LOCATION_RADIUS, locationRadius);
+        values.put(TaskContract.TaskEntry.COL_TASK_COMPLETION, completion);
         db.insertWithOnConflict(TaskContract.TaskEntry.TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
         db.close();
 

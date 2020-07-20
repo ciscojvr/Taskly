@@ -2,6 +2,8 @@ package com.example.taskly;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -11,6 +13,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.TextView;
@@ -18,6 +21,8 @@ import android.widget.TextView;
 import com.example.taskly.db.TaskContract;
 import com.example.taskly.db.TaskDbHelper;
 import com.google.android.gms.maps.model.LatLng;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 
@@ -55,7 +60,6 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
-
         updateUI();
     }
 
@@ -79,6 +83,11 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public void showAllCompletedTasks(View v) {
+        Intent myIntent = new Intent(this, CompletedTasksActivity.class);
+        this.startActivity(myIntent);
+    }
+
     private void updateUI() {
         isDatabaseEmpty();
         ArrayList<Task> taskList = new ArrayList<>();
@@ -94,9 +103,10 @@ public class MainActivity extends AppCompatActivity {
                         TaskContract.TaskEntry.COL_TASK_URGENCY,
                         TaskContract.TaskEntry.COL_TASK_LOCATION_LAT,
                         TaskContract.TaskEntry.COL_TASK_LOCATION_LNG,
-                        TaskContract.TaskEntry.COL_TASK_LOCATION_RADIUS
+                        TaskContract.TaskEntry.COL_TASK_LOCATION_RADIUS,
+                        TaskContract.TaskEntry.COL_TASK_COMPLETION
                 },
-                null,
+                TaskContract.TaskEntry.COL_TASK_COMPLETION + "='incomplete'",
                 null,
                 null,
                 null,
@@ -173,9 +183,10 @@ public class MainActivity extends AppCompatActivity {
                         TaskContract.TaskEntry.COL_TASK_URGENCY,
                         TaskContract.TaskEntry.COL_TASK_LOCATION_LAT,
                         TaskContract.TaskEntry.COL_TASK_LOCATION_LNG,
-                        TaskContract.TaskEntry.COL_TASK_LOCATION_RADIUS
+                        TaskContract.TaskEntry.COL_TASK_LOCATION_RADIUS,
+                        TaskContract.TaskEntry.COL_TASK_COMPLETION
                 },
-                TaskContract.TaskEntry.COL_TASK_TITLE + " LIKE '%" + taskName + "%' ",
+                TaskContract.TaskEntry.COL_TASK_TITLE + " LIKE '%" + taskName + "%' AND " + TaskContract.TaskEntry.COL_TASK_COMPLETION + " = incomplete",
                 null,
                 null,
                 null,
@@ -252,16 +263,64 @@ public class MainActivity extends AppCompatActivity {
         db.close();
     }
 
-    public void deleteTask(View view) {
+    public void completeTask(View view) {
+        //Todo: When marking a task as complete we want to update the task in the database and change it from incomplete to complete.
+        SQLiteDatabase db = mHelper.getWritableDatabase();
+
         View parent = (View) view.getParent();
+
         TextView taskTextView = (TextView) parent.findViewById(R.id.task_title);
         String task = String.valueOf(taskTextView.getText());
-        SQLiteDatabase db = mHelper.getWritableDatabase();
-        db.delete(TaskContract.TaskEntry.TABLE,
-                TaskContract.TaskEntry.COL_TASK_TITLE + " = ? ",
-                new String[]{task});
+
+        TextView dueDateTextView = (TextView) parent.findViewById(R.id.task_due_date);
+        String dueDate = String.valueOf(dueDateTextView);
+
+        TextView dueTimeTextView = (TextView) parent.findViewById(R.id.task_due_time);
+        String dueTime = String.valueOf(dueTimeTextView);
+
+        TextView urgencyTextView = (TextView) parent.findViewById(R.id.task_urgency);
+        String urgency = String.valueOf(urgencyTextView);
+
+        TextView locationTextView = (TextView) parent.findViewById(R.id.task_location);
+        String locationString = String.valueOf(locationTextView);
+        Log.i(TAG, "Location string is: " + locationString);
+
+//        String locationLat = locationString.split(",")[0];
+//        String locationLong = locationString.split(",")[1];
+
+        TextView radiusTextView = (TextView) parent.findViewById(R.id.task_location_radius);
+        String locationRadius = String.valueOf(radiusTextView);
+
+        String completion = "complete";
+
+        ContentValues values = new ContentValues();
+        values.put(TaskContract.TaskEntry.COL_TASK_TITLE, task);
+        values.put(TaskContract.TaskEntry.COL_TASK_DATE, dueDate);
+        values.put(TaskContract.TaskEntry.COL_TASK_TIME, dueTime);
+        values.put(TaskContract.TaskEntry.COL_TASK_URGENCY, urgency);
+        values.put(TaskContract.TaskEntry.COL_TASK_LOCATION_LAT, "0");
+        values.put(TaskContract.TaskEntry.COL_TASK_LOCATION_LNG, "0");
+        values.put(TaskContract.TaskEntry.COL_TASK_LOCATION_RADIUS, locationRadius);
+        values.put(TaskContract.TaskEntry.COL_TASK_COMPLETION, completion);
+
+        db.update(TaskContract.TaskEntry.TABLE, values, TaskContract.TaskEntry.COL_TASK_TITLE + " = " + task, null);
         db.close();
-        updateUI();
+
+//        SQLiteDatabase db = mHelper.getWritableDatabase();
+//        db.delete(TaskContract.TaskEntry.TABLE,
+//                TaskContract.TaskEntry.COL_TASK_TITLE + " = ? ",
+//                new String[]{task});
+//        db.close();
+//        updateUI();
+
+
+
+//        ContentValues cv = new ContentValues();
+//cv.put("Field1","Bob"); //These Fields should be your String values of actual column names
+//cv.put("Field2","19");
+//cv.put("Field2","Male");
+
+//        myDB.update(TableName, cv, "_id="+id, null);
     }
 
     public void searchForTask(String task) {
