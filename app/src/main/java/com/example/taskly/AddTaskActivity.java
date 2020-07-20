@@ -223,6 +223,10 @@ public class AddTaskActivity extends AppCompatActivity implements DatePickerDial
             case R.id.button_addTask:
                 addTask();
                 break;
+            case R.id.button_chooseLocation:
+                //Call the new activity here
+                getLocation();
+                break;
         }
     }
 
@@ -291,5 +295,20 @@ public class AddTaskActivity extends AppCompatActivity implements DatePickerDial
     public void cancelAddTask() {
         Intent myIntent = new Intent(this, MainActivity.class);
         this.startActivity(myIntent);
+    }
+
+    public void getLocation() {
+        String newLat = "";
+        String newLng = "";
+
+        //Call get location activity here
+        Intent i = new Intent(AddTaskActivity.this, ChooseLocationActivity.class);
+        startActivity(i);
+
+        newLat = String.valueOf(ChooseLocationActivity.LastLatLng.latitude);
+        newLng = String.valueOf(ChooseLocationActivity.LastLatLng.longitude);
+
+        taskLocationLat.setText(newLat);
+        taskLocationLong.setText(newLng);
     }
 }

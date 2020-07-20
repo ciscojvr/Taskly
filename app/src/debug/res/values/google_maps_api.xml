@@ -1,0 +1,25 @@
+<resources>
+    <!--
+    TODO: Before you run your application, you need a Google Maps API key.
+
+    To get one, follow this link, follow the directions and press "Create" at the end:
+
+    https://console.developers.google.com/flows/enableapi?apiid=maps_android_backend&keyType=CLIENT_SIDE_ANDROID&r=60:19:F0:E4:8C:F3:AF:66:AB:70:0B:47:1A:1B:83:C9:34:B9:65:F7%3Bcom.example.taskly
+
+    You can also add your credentials to an existing key, using these values:
+
+    Package name:
+    com.example.taskly
+
+    SHA-1 certificate fingerprint:
+    60:19:F0:E4:8C:F3:AF:66:AB:70:0B:47:1A:1B:83:C9:34:B9:65:F7
+
+    Alternatively, follow the directions here:
+    https://developers.google.com/maps/documentation/android/start#get-key
+
+    Once you have your key (it starts with "AIza"), replace the "google_maps_key"
+    string in this file.
+    -->
+    <!--Just storing this throwaway key as plaintext-->
+    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">AIzaSyBDKRgtRGbprN5h08Moav3wBImf0c63qrI</string>
+</resources>
