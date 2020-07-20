@@ -130,19 +130,19 @@ public class MainActivity extends AppCompatActivity {
             Task currentTask = new Task(titleOfTask, dueDateOfTask, dueTimeOfTask, urgencyOfTask, locationLatLng, locationRadius);
 
             taskList.add(currentTask);
-            Log.d(
-                    TAG,
-                    "Task: " +
-                            currentTask.getTaskName() +
-                            " Due on: " +
-                            currentTask.getTaskDueDate() +
-                            " At: " +
-                            currentTask.getTaskDueTime() +
-                            " With Urgency: " +
-                            currentTask.getTaskUrgency() +
-                            " Location/Radius: " +
-                            currentTask.getTaskLocation() + "/" + currentTask.getTaskLocationRadius()
-                    );
+//            Log.d(
+//                    TAG,
+//                    "Task: " +
+//                            currentTask.getTaskName() +
+//                            " Due on: " +
+//                            currentTask.getTaskDueDate() +
+//                            " At: " +
+//                            currentTask.getTaskDueTime() +
+//                            " With Urgency: " +
+//                            currentTask.getTaskUrgency() +
+//                            " Location/Radius: " +
+//                            currentTask.getTaskLocation() + "/" + currentTask.getTaskLocationRadius()
+//                    );
         }
 
         if (mAdapter == null) {
@@ -209,19 +209,19 @@ public class MainActivity extends AppCompatActivity {
             Task currentTask = new Task(titleOfTask, dueDateOfTask, dueTimeOfTask, urgencyOfTask, locationLatLng, locationRadius);
 
             taskList.add(currentTask);
-            Log.d(
-                    TAG,
-                    "Task: " +
-                            currentTask.getTaskName() +
-                            " Due on: " +
-                            currentTask.getTaskDueDate() +
-                            " At: " +
-                            currentTask.getTaskDueTime() +
-                            " With Urgency: " +
-                            currentTask.getTaskUrgency() +
-                            " Location/Radius: " +
-                            currentTask.getTaskLocation() + "/" + currentTask.getTaskLocationRadius()
-            );
+//            Log.d(
+//                    TAG,
+//                    "Task: " +
+//                            currentTask.getTaskName() +
+//                            " Due on: " +
+//                            currentTask.getTaskDueDate() +
+//                            " At: " +
+//                            currentTask.getTaskDueTime() +
+//                            " With Urgency: " +
+//                            currentTask.getTaskUrgency() +
+//                            " Location/Radius: " +
+//                            currentTask.getTaskLocation() + "/" + currentTask.getTaskLocationRadius()
+//            );
         }
 
         if (mAdapter == null) {
@@ -265,18 +265,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void searchForTask(String task) {
-        StringBuilder sb = new StringBuilder();
-        SQLiteDatabase db = mHelper.getWritableDatabase();
-        Cursor cursor = db.query(TaskContract.TaskEntry.TABLE, null, TaskContract.TaskEntry.COL_TASK_TITLE + " LIKE '%" + task + "%' ", null, null, null, null);
-        while (cursor.moveToNext()) {
-            sb.append(cursor.getString(cursor.getColumnIndex(TaskContract.TaskEntry.COL_TASK_TITLE)));
-            sb.append("\n");
-        }
-        if (cursor.getCount() < 1) {
-            Log.d(TAG, "No tasks found matching the search criteria.");
-        } else {
-            Log.d(TAG, "Search results:\n" + sb.toString());
-        }
+//        StringBuilder sb = new StringBuilder();
+//        SQLiteDatabase db = mHelper.getWritableDatabase();
+//        Cursor cursor = db.query(TaskContract.TaskEntry.TABLE, null, TaskContract.TaskEntry.COL_TASK_TITLE + " LIKE '%" + task + "%' ", null, null, null, null);
+//        while (cursor.moveToNext()) {
+//            sb.append(cursor.getString(cursor.getColumnIndex(TaskContract.TaskEntry.COL_TASK_TITLE)));
+//            sb.append("\n");
+//        }
+//        if (cursor.getCount() < 1) {
+//            Log.d(TAG, "No tasks found matching the search criteria.");
+//        } else {
+//            Log.d(TAG, "Search results:\n" + sb.toString());
+//        }
 
         updateUIWith(task);
     }
