@@ -1,18 +1,31 @@
 package com.example.taskly;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
+import android.os.Looper;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.SettingsClient;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -21,16 +34,31 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PointOfInterest;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 
 import java.util.Locale;
 
+import static com.google.android.gms.location.LocationServices.getFusedLocationProviderClient;
+
 public class ChooseLocationActivity extends AppCompatActivity implements OnMapReadyCallback {
 
+    //Google Maps android object
+    private GoogleMap mMap;
+    private float mapDefaultZoom = 13;
+
+    //Marker tracking members
     public static Marker LastMarker;
     public static LatLng LastLatLng = new LatLng(1.0, 1.0);
 
-    private GoogleMap mMap;
+    //Location access members
+    private boolean locationPermissionGranted = false;
+    private LocationRequest lr;
+    private boolean locationRequested = false;
+
+    //UI Elements
     private Button endButton;
+    private Button getLocationButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,8 +73,22 @@ public class ChooseLocationActivity extends AppCompatActivity implements OnMapRe
         endButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //Send the lat long info back to the Task creator
                 AddTaskActivity.SetInfoFromLocationChooser(LastLatLng.latitude, LastLatLng.longitude);
                 finish();
+            }
+        });
+
+        getLocationButton = (Button)findViewById(R.id.getCurrentLocationButton);
+        getLocationButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!locationPermissionGranted) {
+                    getLocationPermission();
+                }
+                else {
+                    getDeviceLocation();
+                }
             }
         });
 
@@ -55,8 +97,6 @@ public class ChooseLocationActivity extends AppCompatActivity implements OnMapRe
     /**
      * Manipulates the map once available.
      * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
      * If Google Play services is not installed on the device, the user will be prompted to install
      * it inside the SupportMapFragment. This method will only be triggered once the user has
      * installed Google Play services and returned to the app.
@@ -67,9 +107,7 @@ public class ChooseLocationActivity extends AppCompatActivity implements OnMapRe
 
         // Add a marker in Sydney and move the camera
         LatLng atlanta = new LatLng(33.762, -84.395);
-        float zoom = 13;
-        mMap.addMarker(new MarkerOptions().position(atlanta).title("Marker in Atlanta"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(atlanta, zoom));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(atlanta, mapDefaultZoom));
         mMap.getUiSettings().setZoomControlsEnabled(true);
 
         getLocationPermission();
@@ -115,15 +153,58 @@ public class ChooseLocationActivity extends AppCompatActivity implements OnMapRe
     }
 
     private void getLocationPermission() {
-        boolean m_locationPermissionGranted = false;
         if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            m_locationPermissionGranted = true;
+            locationPermissionGranted = true;
         }
         else {
             ActivityCompat.requestPermissions(this,
                     new String[] {Manifest.permission.ACCESS_FINE_LOCATION},
                     1);
         }
+    }
+
+    @SuppressLint("MissingPermission")
+    private void getDeviceLocation() {
+        locationRequested = true;
+        long UPDATE_INTERVAL = 10 * 1000;
+        long FASTEST_INTERVAL = 2000;
+
+        lr = new LocationRequest();
+        lr.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        lr.setInterval(UPDATE_INTERVAL);
+        lr.setFastestInterval(FASTEST_INTERVAL);
+
+        LocationSettingsRequest.Builder lsrb = new LocationSettingsRequest.Builder();
+        lsrb.addLocationRequest(lr);
+        LocationSettingsRequest lsr = lsrb.build();
+
+        //Check if location settings are satisfied
+        SettingsClient sc = LocationServices.getSettingsClient(this);
+        sc.checkLocationSettings(lsr);
+
+        getFusedLocationProviderClient(this).requestLocationUpdates(lr, new LocationCallback() {
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                Location lastLocation = locationResult.getLastLocation();
+
+                //Center map on the device's lat long, and place a marker there
+                if (locationRequested) {
+                    LastLatLng = new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude());
+
+                    mMap.moveCamera(CameraUpdateFactory.newLatLng(LastLatLng));
+                    String snippet = String.format(Locale.getDefault(),
+                            "Lat: %1$.5f, Long: %2$.5f",
+                            LastLatLng.latitude,
+                            LastLatLng.longitude);
+                    mMap.addMarker(new MarkerOptions()
+                            .position(LastLatLng)
+                            .title("Device Location")
+                            .snippet(snippet));
+
+                    locationRequested = false;
+                }
+            }
+        }, Looper.myLooper());
     }
 }

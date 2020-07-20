@@ -15,12 +15,29 @@
         android:layout_weight="9"
         tools:context=".ChooseLocationActivity"/>
 
-    <Button
-        android:id="@+id/endButton"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-        android:layout_gravity="center"
         android:layout_weight="1"
-        android:text="Choose this location"/>
+        android:orientation="horizontal"
+        android:layout_gravity="center"
+        android:gravity="center">
+
+        <Button
+            android:id="@+id/getCurrentLocationButton"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_gravity="center"
+            android:text="Get device location"/>
+
+        <Button
+            android:id="@+id/endButton"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_gravity="center"
+            android:text="Choose this location"/>
+
+    </LinearLayout>
+
 
 </LinearLayout>
