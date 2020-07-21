@@ -13,4 +13,5 @@
     <string name="medium">Medium</string>
     <string name="low">Low</string>
     <string name="what_will_you_accomplish_today">What will you accomplish today...</string>
+    <string name="title_activity_choose_location">Map</string>
 </resources>
