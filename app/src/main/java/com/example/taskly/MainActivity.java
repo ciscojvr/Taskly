@@ -1,10 +1,14 @@
 package com.example.taskly;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -19,7 +23,9 @@ import com.example.taskly.db.TaskContract;
 import com.example.taskly.db.TaskDbHelper;
 import com.google.android.gms.maps.model.LatLng;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
     private TextView mTextViewDone;
@@ -30,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
 
     SearchView taskSearchView;
 
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         updateUI();
+        getTasksDueToday();
     }
 
     @Override
@@ -94,7 +102,8 @@ public class MainActivity extends AppCompatActivity {
                         TaskContract.TaskEntry.COL_TASK_URGENCY,
                         TaskContract.TaskEntry.COL_TASK_LOCATION_LAT,
                         TaskContract.TaskEntry.COL_TASK_LOCATION_LNG,
-                        TaskContract.TaskEntry.COL_TASK_LOCATION_RADIUS
+                        TaskContract.TaskEntry.COL_TASK_LOCATION_RADIUS,
+                        TaskContract.TaskEntry.COL_TASK_REMINDER
                 },
                 null,
                 null,
@@ -125,9 +134,12 @@ public class MainActivity extends AppCompatActivity {
             int idxLocationRadius = cursor.getColumnIndex(TaskContract.TaskEntry.COL_TASK_LOCATION_RADIUS);
             String locationRadiusOfTask = cursor.getString((idxLocationRadius));
 
+            int idxReminder = cursor.getColumnIndex(TaskContract.TaskEntry.COL_TASK_REMINDER);
+            String remindMeValue = cursor.getString((idxReminder));
+
             LatLng locationLatLng = new LatLng(Double.parseDouble(locationLatOfTask), Double.parseDouble(locationLngOfTask));
             double locationRadius = Double.parseDouble(locationRadiusOfTask);
-            Task currentTask = new Task(titleOfTask, dueDateOfTask, dueTimeOfTask, urgencyOfTask, locationLatLng, locationRadius);
+            Task currentTask = new Task(titleOfTask, dueDateOfTask, dueTimeOfTask, urgencyOfTask, locationLatLng, locationRadius, remindMeValue);
 
             taskList.add(currentTask);
 //            Log.d(
@@ -173,7 +185,9 @@ public class MainActivity extends AppCompatActivity {
                         TaskContract.TaskEntry.COL_TASK_URGENCY,
                         TaskContract.TaskEntry.COL_TASK_LOCATION_LAT,
                         TaskContract.TaskEntry.COL_TASK_LOCATION_LNG,
-                        TaskContract.TaskEntry.COL_TASK_LOCATION_RADIUS
+                        TaskContract.TaskEntry.COL_TASK_LOCATION_RADIUS,
+                        TaskContract.TaskEntry.COL_TASK_REMINDER
+
                 },
                 TaskContract.TaskEntry.COL_TASK_TITLE + " LIKE '%" + taskName + "%' ",
                 null,
@@ -204,9 +218,12 @@ public class MainActivity extends AppCompatActivity {
             int idxLocationRadius = cursor.getColumnIndex(TaskContract.TaskEntry.COL_TASK_LOCATION_RADIUS);
             String locationRadiusOfTask = cursor.getString((idxLocationRadius));
 
+            int idxReminder = cursor.getColumnIndex(TaskContract.TaskEntry.COL_TASK_REMINDER);
+            String remindMeValue = cursor.getString((idxReminder));
+
             LatLng locationLatLng = new LatLng(Double.parseDouble(locationLatOfTask), Double.parseDouble(locationLngOfTask));
             double locationRadius = Double.parseDouble(locationRadiusOfTask);
-            Task currentTask = new Task(titleOfTask, dueDateOfTask, dueTimeOfTask, urgencyOfTask, locationLatLng, locationRadius);
+            Task currentTask = new Task(titleOfTask, dueDateOfTask, dueTimeOfTask, urgencyOfTask, locationLatLng, locationRadius, remindMeValue);
 
             taskList.add(currentTask);
 //            Log.d(
@@ -279,5 +296,78 @@ public class MainActivity extends AppCompatActivity {
 //        }
 
         updateUIWith(task);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    public void getTasksDueToday() {
+        SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyy");
+        Date date = new Date();
+        String todaysDate = formatter.format(date);
+        Log.i(TAG, "Today's date is " + todaysDate);
+
+        SQLiteDatabase db = mHelper.getReadableDatabase();
+
+        StringBuilder sb = new StringBuilder();
+        ArrayList<String> dueToday = new ArrayList<String>();
+
+        Cursor cursor = db.query(
+                TaskContract.TaskEntry.TABLE,
+                new String[] {
+                        TaskContract.TaskEntry._ID,
+                        TaskContract.TaskEntry.COL_TASK_TITLE,
+                        TaskContract.TaskEntry.COL_TASK_DATE,
+                        TaskContract.TaskEntry.COL_TASK_TIME,
+                        TaskContract.TaskEntry.COL_TASK_URGENCY,
+                        TaskContract.TaskEntry.COL_TASK_LOCATION_LAT,
+                        TaskContract.TaskEntry.COL_TASK_LOCATION_LNG,
+                        TaskContract.TaskEntry.COL_TASK_LOCATION_RADIUS,
+                        TaskContract.TaskEntry.COL_TASK_REMINDER
+
+                },
+                TaskContract.TaskEntry.COL_TASK_DATE + " LIKE '%" + todaysDate + "%' AND " + TaskContract.TaskEntry.COL_TASK_REMINDER + " = 'Yes'",
+                null,
+                null,
+                null,
+                null);
+
+        while(cursor.moveToNext()) {
+
+            int idxTitle = cursor.getColumnIndex(TaskContract.TaskEntry.COL_TASK_TITLE);
+            String titleOfTask = cursor.getString((idxTitle));
+
+            int idxDueTime = cursor.getColumnIndex(TaskContract.TaskEntry.COL_TASK_TIME);
+            String dueTimeOfTask = cursor.getString((idxDueTime));
+            String newDueTimeFormat = dueTimeOfTask.replaceAll("[^\\d:]", "");
+            int hour = Integer.parseInt(newDueTimeFormat.split(":")[0]);
+            int minute = Integer.parseInt(newDueTimeFormat.split(":")[1]);
+            Log.i(TAG, "Hour is: " + hour + " and minute is: " + minute);
+
+//            Calendar c = Calendar.getInstance();
+//            c.set(Calendar.HOUR_OF_DAY,hour);
+//            c.set(Calendar.MINUTE,minute);
+//            c.set(Calendar.SECOND, 0);
+            sb.append(titleOfTask + "\n");
+
+            dueToday.add(titleOfTask + "," + dueTimeOfTask);
+        }
+
+        cursor.close();
+        db.close();
+
+        Log.i(TAG, sb.toString());
+
+        String CHANNEL_ID = "my_channel_01";
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
+                .setSmallIcon(R.drawable.common_google_signin_btn_icon_dark)
+                .setContentTitle("These tasks are due today:")
+                .setStyle(new NotificationCompat.BigTextStyle().bigText(sb.length() > 0 ? sb.toString() : "No tasks due today."))
+                .setAutoCancel(true)
+                .setPriority(NotificationCompat.PRIORITY_HIGH);
+
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+
+        // notificationId is a unique int for each notification that you must define
+        int notificationId = 1;
+        notificationManager.notify(notificationId, builder.build());
     }
 }

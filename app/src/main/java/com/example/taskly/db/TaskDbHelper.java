@@ -20,7 +20,8 @@ public class TaskDbHelper extends SQLiteOpenHelper {
                 TaskContract.TaskEntry.COL_TASK_URGENCY + " TEXT NOT NULL, " +
                 TaskContract.TaskEntry.COL_TASK_LOCATION_LAT + " TEXT NOT NULL, " +
                 TaskContract.TaskEntry.COL_TASK_LOCATION_LNG + " TEXT NOT NULL, " +
-                TaskContract.TaskEntry.COL_TASK_LOCATION_RADIUS + " TEXT NOT NULL);";
+                TaskContract.TaskEntry.COL_TASK_LOCATION_RADIUS + " TEXT NOT NULL, " +
+                TaskContract.TaskEntry.COL_TASK_REMINDER + " TEXT NOT NULL);";
         db.execSQL(createTable);
     }
 

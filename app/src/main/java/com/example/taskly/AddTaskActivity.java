@@ -18,14 +18,16 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
 import com.example.taskly.db.TaskContract;
 import com.example.taskly.db.TaskDbHelper;
 
-import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Locale;
 
 
 public class AddTaskActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
@@ -40,10 +42,13 @@ public class AddTaskActivity extends AppCompatActivity implements DatePickerDial
     Button addTimeButton;
     TextView timeLabel;
 
+    Switch reminderSelection;
+
     private static EditText taskLocationLat, taskLocationLong, taskLocationRadius;
 
     Button cancelButton, addTaskButton;
 
+//    boolean isTaskProvided, isDateProvided, isTimeProvided, isUrgencyLevelSelected, isLatProvided, isLongProvided, isRadiusProvided, isReminderProvided = false;
     boolean isTaskProvided, isDateProvided, isTimeProvided, isUrgencyLevelSelected, isLatProvided, isLongProvided, isRadiusProvided = false;
 
 
@@ -187,6 +192,7 @@ public class AddTaskActivity extends AppCompatActivity implements DatePickerDial
             }
         });
 
+        reminderSelection = (Switch) findViewById(R.id.task_reminder_selection);
         cancelButton = (Button) findViewById(R.id.button_cancel);
         addTaskButton = (Button) findViewById(R.id.button_addTask);
         addTaskButton.setEnabled(false);
@@ -243,13 +249,14 @@ public class AddTaskActivity extends AppCompatActivity implements DatePickerDial
         c.set(Calendar.YEAR, year);
         c.set(Calendar.MONTH, month);
         c.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-        String currentDateString = DateFormat.getDateInstance(DateFormat.FULL).format(c.getTime());
+        String currentDateString = new SimpleDateFormat("MM/dd/yyy", Locale.ENGLISH).format(c.getTime());
         dateLabel.setText(currentDateString);
     }
 
     @Override
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-        timeLabel.setText(hourOfDay + ":" + minute);
+        String strMinsToShow = (minute >= 10) ? String.valueOf(minute): "0" + minute;
+        timeLabel.setText(hourOfDay + ":" + strMinsToShow);
     }
 
     public void addTask() {
@@ -268,6 +275,14 @@ public class AddTaskActivity extends AppCompatActivity implements DatePickerDial
         String locationLong = String.valueOf(taskLocationLong.getText());
         String locationRadius = String.valueOf(taskLocationRadius.getText());
 
+        boolean shouldRemind = reminderSelection.isChecked();
+        String remindMeSelection;
+        if (shouldRemind) {
+            remindMeSelection = "Yes";
+        } else {
+            remindMeSelection = "No";
+        }
+
         Log.d(TAG, "Task to add: " + task);
         Log.d(TAG, "Task due date: " + dueDate);
         Log.d(TAG, "Task due time: " + dueTime);
@@ -275,6 +290,7 @@ public class AddTaskActivity extends AppCompatActivity implements DatePickerDial
         Log.d(TAG, "Task Location (Lat): " + locationLat);
         Log.d(TAG, "Task Location (Lng): " + locationLong);
         Log.d(TAG, "Task Location Radius (m): " + locationRadius);
+        Log.d(TAG, "Task reminder selection: " + remindMeSelection);
 
         SQLiteDatabase db = mHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -285,6 +301,7 @@ public class AddTaskActivity extends AppCompatActivity implements DatePickerDial
         values.put(TaskContract.TaskEntry.COL_TASK_LOCATION_LAT, locationLat);
         values.put(TaskContract.TaskEntry.COL_TASK_LOCATION_LNG, locationLong);
         values.put(TaskContract.TaskEntry.COL_TASK_LOCATION_RADIUS, locationRadius);
+        values.put(TaskContract.TaskEntry.COL_TASK_REMINDER, remindMeSelection);
         db.insertWithOnConflict(TaskContract.TaskEntry.TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
         db.close();
 

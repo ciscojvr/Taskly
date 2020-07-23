@@ -10,14 +10,16 @@ public class Task {
     private String taskUrgency;
     private LatLng taskLocation;
     private double taskLocationRadius;
+    private  String taskRemindMe;
 
-    public Task(String taskName, String taskDueDate, String taskDueTime, String taskUrgency, LatLng taskLocation, double taskLocationRadius) {
+    public Task(String taskName, String taskDueDate, String taskDueTime, String taskUrgency, LatLng taskLocation, double taskLocationRadius, String taskRemindMe) {
         this.taskName = taskName;
         this.taskDueDate = taskDueDate;
         this.taskDueTime = taskDueTime;
         this.taskUrgency = taskUrgency;
         this.taskLocation = taskLocation;
         this.taskLocationRadius = taskLocationRadius;
+        this.taskRemindMe = taskRemindMe;
     }
 
     public String getTaskName() {
@@ -59,4 +61,12 @@ public class Task {
     public double getTaskLocationRadius() { return taskLocationRadius; }
 
     public void setTaskLocationRadius(double taskLocationRadius) { this.taskLocationRadius = taskLocationRadius; }
+
+    public String getTaskRemindMe() {
+        return taskRemindMe;
+    }
+
+    public void setTaskRemindMe(String taskRemindMe) {
+        this.taskRemindMe = taskRemindMe;
+    }
 }
