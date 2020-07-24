@@ -52,6 +52,9 @@ public class TasksAdapter extends ArrayAdapter<Task> {
             TextView taskLocationRadius = (TextView) listItem.findViewById(R.id.task_location_radius);
             taskLocationRadius.setText(String.valueOf(currentTask.getTaskLocationRadius()));
 
+            TextView taskReminder = (TextView) listItem.findViewById(R.id.task_reminder);
+            taskReminder.setText(String.valueOf(currentTask.getTaskRemindMe()));
+
             return listItem;
     }
 }
