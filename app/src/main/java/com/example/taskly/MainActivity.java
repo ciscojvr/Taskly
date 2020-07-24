@@ -131,7 +131,12 @@ public class MainActivity extends AppCompatActivity {
 
             int idxTaskImage = cursor.getColumnIndex(TaskContract.TaskEntry.COL_TASK_IMAGE);
             byte[] taskImage = cursor.getBlob(idxTaskImage);
-            Bitmap taskImageBitmap = BitmapFactory.decodeByteArray(taskImage, 0, taskImage.length);
+            Bitmap taskImageBitmap;
+            if (taskImage!=null) {
+                taskImageBitmap = BitmapFactory.decodeByteArray(taskImage, 0, taskImage.length);
+            } else {
+                taskImageBitmap = null;
+            }
 
             Task currentTask = new Task(titleOfTask, dueDateOfTask, dueTimeOfTask, urgencyOfTask, locationLatLng, taskImageBitmap);
 
@@ -199,7 +204,13 @@ public class MainActivity extends AppCompatActivity {
 
             int idxTaskImage = cursor.getColumnIndex(TaskContract.TaskEntry.COL_TASK_IMAGE);
             byte[] taskImage = cursor.getBlob(idxTaskImage);
-            Bitmap taskImageBitmap = BitmapFactory.decodeByteArray(taskImage, 0, taskImage.length);
+
+            Bitmap taskImageBitmap;
+            if (taskImage!=null) {
+                taskImageBitmap = BitmapFactory.decodeByteArray(taskImage, 0, taskImage.length);
+            } else {
+                taskImageBitmap = null;
+            }
 
             Task currentTask = new Task(titleOfTask, dueDateOfTask, dueTimeOfTask, urgencyOfTask, locationLatLng, taskImageBitmap);
 

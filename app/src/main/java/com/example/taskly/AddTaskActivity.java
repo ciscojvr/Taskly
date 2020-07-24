@@ -259,7 +259,12 @@ public class AddTaskActivity extends AppCompatActivity implements DatePickerDial
         String locationLat = String.valueOf(latitudeLabel.getText());
         String locationLong = String.valueOf(longitudeLabel.getText());
 
-        byte[] data = getBitmapAsByteArray(imageBitmap);
+        byte[] data;
+        if (imageBitmap != null) {
+            data = getBitmapAsByteArray(imageBitmap);
+        } else {
+            data = null;
+        }
 
 
         Log.d(TAG, "Task to add: " + task);
