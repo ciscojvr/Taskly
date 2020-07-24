@@ -1,30 +1,47 @@
 package com.example.taskly;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
 import androidx.fragment.app.DialogFragment;
+
+import android.Manifest;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import com.example.taskly.db.TaskContract;
 import com.example.taskly.db.TaskDbHelper;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
+
+import static android.os.Environment.getExternalStoragePublicDirectory;
 
 
 public class AddTaskActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
@@ -32,10 +49,14 @@ public class AddTaskActivity extends AppCompatActivity implements DatePickerDial
     private TaskDbHelper mHelper;
     private static EditText task;
 
+    private static ImageView imageView;
+
     private static TextView dateLabel, timeLabel, latitudeLabel, longitudeLabel;
 
     boolean isTaskProvided, isDateProvided, isTimeProvided, isUrgencyLevelSelected, isLatitudeProvided, isLongitudeProvided = false;
 
+    String pathToFile;
+    Bitmap imageBitmap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +66,8 @@ public class AddTaskActivity extends AppCompatActivity implements DatePickerDial
         mHelper = new TaskDbHelper(this);
 
         task = (EditText) findViewById(R.id.editText_taskInfo);
+
+        imageView = (ImageView) findViewById(R.id.imageView_image);
 
         task.addTextChangedListener(new TextWatcher() {
             @Override
@@ -156,6 +179,10 @@ public class AddTaskActivity extends AppCompatActivity implements DatePickerDial
         });
 
         findViewById(R.id.button_addTask).setEnabled(false);
+
+        if (Build.VERSION.SDK_INT >= 23) {
+            requestPermissions(new String[] {Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE},2);
+        }
     }
 
     public static boolean areAllTrue(boolean[] array)
@@ -178,6 +205,7 @@ public class AddTaskActivity extends AppCompatActivity implements DatePickerDial
             case R.id.button_addPhoto:
                 // ToDo: Implement add a photo to the database by using the camera.
                 Log.i(TAG, "Add Photo Button Pressed.");
+                getImage();
                 break;
             case R.id.button_addDate:
                 DialogFragment datePicker = new DatePickerFragment();
@@ -231,8 +259,8 @@ public class AddTaskActivity extends AppCompatActivity implements DatePickerDial
         String locationLat = String.valueOf(latitudeLabel.getText());
         String locationLong = String.valueOf(longitudeLabel.getText());
 
-        // ToDo: Code for getting image from camera and passing it to content value below
-        String taskImage = null;
+        byte[] data = getBitmapAsByteArray(imageBitmap);
+
 
         Log.d(TAG, "Task to add: " + task);
         Log.d(TAG, "Task due date: " + dueDate);
@@ -249,12 +277,18 @@ public class AddTaskActivity extends AppCompatActivity implements DatePickerDial
         values.put(TaskContract.TaskEntry.COL_TASK_URGENCY, urgency);
         values.put(TaskContract.TaskEntry.COL_TASK_LOCATION_LAT, locationLat);
         values.put(TaskContract.TaskEntry.COL_TASK_LOCATION_LNG, locationLong);
-        values.put(TaskContract.TaskEntry.COL_TASK_IMAGE, "Image goes here.");
+        values.put(TaskContract.TaskEntry.COL_TASK_IMAGE, data);
         db.insertWithOnConflict(TaskContract.TaskEntry.TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
         db.close();
 
         Intent myIntent = new Intent(this, MainActivity.class);
         this.startActivity(myIntent);
+    }
+
+    public static byte[] getBitmapAsByteArray(Bitmap bitmap) {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 0, outputStream);
+        return outputStream.toByteArray();
     }
 
     public void cancelAddTask() {
@@ -281,4 +315,42 @@ public class AddTaskActivity extends AppCompatActivity implements DatePickerDial
         latitudeLabel.setText(String.valueOf(Math.round(lat * 1000000.0)/1000000.0));
         longitudeLabel.setText(String.valueOf(Math.round(lng * 1000000.0)/1000000.0));
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            imageBitmap = BitmapFactory.decodeFile(pathToFile);
+            imageView.setImageBitmap(imageBitmap);
+        }
+    }
+
+    private void getImage() {
+        Intent takePic = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+        if (takePic.resolveActivity(getPackageManager()) != null) {
+            File photoFile;
+            photoFile = createPhotoFile();
+
+            if(photoFile != null) {
+                pathToFile = photoFile.getAbsolutePath();
+                Uri photoUri = FileProvider.getUriForFile(getApplicationContext(), "com.example.taskly.fileprovider", photoFile);
+                takePic.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
+                startActivityForResult(takePic, 1);
+            }
+        }
+    }
+
+    private File createPhotoFile() {
+        String name = new SimpleDateFormat("yyyMMdd_HHmmss").format(new Date());
+        File storageDir = getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+        File image = null;
+        try {
+            image = File.createTempFile(name, ".jpg", storageDir);
+        } catch (Exception e) {
+            Log.d("myLog", "Exception : " + e.toString());
+        }
+        return image;
+    }
+
 }
