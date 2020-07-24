@@ -14,7 +14,6 @@ public class TaskContract {
         public static final String COL_TASK_URGENCY = "urgency";
         public static final String COL_TASK_LOCATION_LAT = "locationLat";
         public static final String COL_TASK_LOCATION_LNG = "locationLng";
-        public static final String COL_TASK_LOCATION_RADIUS = "locationRadius";
-        public static final String COL_TASK_REMINDER = "taskReminder";
+        public static final String COL_TASK_IMAGE = "image";
     }
 }

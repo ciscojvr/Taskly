@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -49,11 +50,8 @@ public class TasksAdapter extends ArrayAdapter<Task> {
             TextView taskLocationLatLng = (TextView) listItem.findViewById(R.id.task_location);
             taskLocationLatLng.setText(String.valueOf(currentTask.getTaskLocation()));
 
-            TextView taskLocationRadius = (TextView) listItem.findViewById(R.id.task_location_radius);
-            taskLocationRadius.setText(String.valueOf(currentTask.getTaskLocationRadius()));
-
-            TextView taskReminder = (TextView) listItem.findViewById(R.id.task_reminder);
-            taskReminder.setText(String.valueOf(currentTask.getTaskRemindMe()));
+            ImageView taskImage = (ImageView) listItem.findViewById(R.id.imageView_taskImage);
+            taskImage.setImageBitmap(currentTask.getTaskImage());
 
             return listItem;
     }

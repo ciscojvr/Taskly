@@ -1,5 +1,7 @@
 package com.example.taskly;
 
+import android.graphics.Bitmap;
+
 import com.google.android.gms.maps.model.LatLng;
 
 public class Task {
@@ -9,17 +11,15 @@ public class Task {
     private String taskDueTime;
     private String taskUrgency;
     private LatLng taskLocation;
-    private double taskLocationRadius;
-    private  String taskRemindMe;
+    private Bitmap taskImage;
 
-    public Task(String taskName, String taskDueDate, String taskDueTime, String taskUrgency, LatLng taskLocation, double taskLocationRadius, String taskRemindMe) {
+    public Task(String taskName, String taskDueDate, String taskDueTime, String taskUrgency, LatLng taskLocation, Bitmap taskImage) {
         this.taskName = taskName;
         this.taskDueDate = taskDueDate;
         this.taskDueTime = taskDueTime;
         this.taskUrgency = taskUrgency;
         this.taskLocation = taskLocation;
-        this.taskLocationRadius = taskLocationRadius;
-        this.taskRemindMe = taskRemindMe;
+        this.taskImage = taskImage;
     }
 
     public String getTaskName() {
@@ -58,15 +58,7 @@ public class Task {
 
     public void setTaskLocation(LatLng taskLocation) { this.taskLocation = taskLocation; }
 
-    public double getTaskLocationRadius() { return taskLocationRadius; }
+    public Bitmap getTaskImage() { return taskImage; }
 
-    public void setTaskLocationRadius(double taskLocationRadius) { this.taskLocationRadius = taskLocationRadius; }
-
-    public String getTaskRemindMe() {
-        return taskRemindMe;
-    }
-
-    public void setTaskRemindMe(String taskRemindMe) {
-        this.taskRemindMe = taskRemindMe;
-    }
+    public void setTaskImage(Bitmap taskImage) { this.taskImage = taskImage; }
 }

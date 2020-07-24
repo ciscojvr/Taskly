@@ -2,7 +2,6 @@ package com.example.taskly;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
-
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.ContentValues;
@@ -13,12 +12,10 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
@@ -33,23 +30,11 @@ import java.util.Locale;
 public class AddTaskActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
     private static final String TAG = "Add Task Activity"; // Using TAG constant for logging
     private TaskDbHelper mHelper;
-//    private ArrayAdapter<String> mAdapter; // ArrayAdapter will help populate the ListView with the data
-    EditText task;
+    private static EditText task;
 
-    Button addDateButton;
-    TextView dateLabel;
+    private static TextView dateLabel, timeLabel, latitudeLabel, longitudeLabel;
 
-    Button addTimeButton;
-    TextView timeLabel;
-
-    Switch reminderSelection;
-
-    private static EditText taskLocationLat, taskLocationLong, taskLocationRadius;
-
-    Button cancelButton, addTaskButton;
-
-//    boolean isTaskProvided, isDateProvided, isTimeProvided, isUrgencyLevelSelected, isLatProvided, isLongProvided, isRadiusProvided, isReminderProvided = false;
-    boolean isTaskProvided, isDateProvided, isTimeProvided, isUrgencyLevelSelected, isLatProvided, isLongProvided, isRadiusProvided = false;
+    boolean isTaskProvided, isDateProvided, isTimeProvided, isUrgencyLevelSelected, isLatitudeProvided, isLongitudeProvided = false;
 
 
     @Override
@@ -80,7 +65,6 @@ public class AddTaskActivity extends AppCompatActivity implements DatePickerDial
             }
         });
 
-        addDateButton = (Button) findViewById(R.id.button_addDate);
         dateLabel = (TextView) findViewById(R.id.textView_dateDue);
         dateLabel.addTextChangedListener(new TextWatcher() {
             @Override
@@ -102,7 +86,6 @@ public class AddTaskActivity extends AppCompatActivity implements DatePickerDial
             }
         });
 
-        addTimeButton = (Button) findViewById(R.id.button_addTime);
         timeLabel = (TextView) findViewById(R.id.textView_timeDue);
         timeLabel.addTextChangedListener(new TextWatcher() {
             @Override
@@ -132,8 +115,8 @@ public class AddTaskActivity extends AppCompatActivity implements DatePickerDial
             }
         });
 
-        taskLocationLat = (EditText) findViewById(R.id.editText_locationLat);
-        taskLocationLat.addTextChangedListener(new TextWatcher() {
+        latitudeLabel = (TextView) findViewById(R.id.textView_locationLat);
+        latitudeLabel.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
                 shouldAllowTaskAdd();
@@ -141,19 +124,19 @@ public class AddTaskActivity extends AppCompatActivity implements DatePickerDial
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                isLatProvided = true;
+                isLatitudeProvided = true;
                 shouldAllowTaskAdd();
             }
 
             @Override
             public void afterTextChanged(Editable s) {
-                isLatProvided = true;
+                isLatitudeProvided = true;
                 shouldAllowTaskAdd();
             }
         });
 
-        taskLocationLong = (EditText) findViewById(R.id.editText_locationLng);
-        taskLocationLong.addTextChangedListener(new TextWatcher() {
+        longitudeLabel = (TextView) findViewById(R.id.textView_locationLng);
+        longitudeLabel.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
                 shouldAllowTaskAdd();
@@ -161,41 +144,18 @@ public class AddTaskActivity extends AppCompatActivity implements DatePickerDial
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                isLongProvided = true;
+                isLongitudeProvided = true;
                 shouldAllowTaskAdd();
             }
 
             @Override
             public void afterTextChanged(Editable s) {
-                isLongProvided = true;
+                isLongitudeProvided = true;
                 shouldAllowTaskAdd();
             }
         });
 
-        taskLocationRadius = (EditText) findViewById(R.id.editText_locationRadius);
-        taskLocationRadius.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                shouldAllowTaskAdd();
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                isRadiusProvided = true;
-                shouldAllowTaskAdd();
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                isRadiusProvided = true;
-                shouldAllowTaskAdd();
-            }
-        });
-
-        reminderSelection = (Switch) findViewById(R.id.task_reminder_selection);
-        cancelButton = (Button) findViewById(R.id.button_cancel);
-        addTaskButton = (Button) findViewById(R.id.button_addTask);
-        addTaskButton.setEnabled(false);
+        findViewById(R.id.button_addTask).setEnabled(false);
     }
 
     public static boolean areAllTrue(boolean[] array)
@@ -205,16 +165,20 @@ public class AddTaskActivity extends AppCompatActivity implements DatePickerDial
     }
 
     public void shouldAllowTaskAdd() {
-        boolean[] inputsProvided = {isTaskProvided, isDateProvided, isTimeProvided, isUrgencyLevelSelected, isLatProvided, isLongProvided, isRadiusProvided};
+        boolean[] inputsProvided = {isTaskProvided, isDateProvided, isTimeProvided, isUrgencyLevelSelected, isLatitudeProvided, isLongitudeProvided};
         if (areAllTrue(inputsProvided)) {
-            addTaskButton.setEnabled(true);
+            findViewById(R.id.button_addTask).setEnabled(true);
         } else {
-            addTaskButton.setEnabled(false);
+            findViewById(R.id.button_addTask).setEnabled(false);
         }
     }
 
     public void onClick(View v) {
         switch (v.getId()) {
+            case R.id.button_addPhoto:
+                // ToDo: Implement add a photo to the database by using the camera.
+                Log.i(TAG, "Add Photo Button Pressed.");
+                break;
             case R.id.button_addDate:
                 DialogFragment datePicker = new DatePickerFragment();
                 datePicker.show(getSupportFragmentManager(), "date picker");
@@ -223,24 +187,17 @@ public class AddTaskActivity extends AppCompatActivity implements DatePickerDial
                 DialogFragment timePicker = new TimePickerFragment();
                 timePicker.show(getSupportFragmentManager(), "time picker");
                 break;
+            case R.id.button_addLocation:
+                getLocation();
+                break;
             case R.id.button_cancel:
                 cancelAddTask();
                 break;
             case R.id.button_addTask:
                 addTask();
                 break;
-            case R.id.button_chooseLocation:
-                //Call the new activity here
-                getLocation();
-                break;
+
         }
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-        Log.d(TAG,"onStart called");
     }
 
     @Override
@@ -271,17 +228,11 @@ public class AddTaskActivity extends AppCompatActivity implements DatePickerDial
         RadioButton taskUrgency = findViewById(taskUrgencyId);
         String urgency = taskUrgency.getText().toString();
 
-        String locationLat = String.valueOf(taskLocationLat.getText());
-        String locationLong = String.valueOf(taskLocationLong.getText());
-        String locationRadius = String.valueOf(taskLocationRadius.getText());
+        String locationLat = String.valueOf(latitudeLabel.getText());
+        String locationLong = String.valueOf(longitudeLabel.getText());
 
-        boolean shouldRemind = reminderSelection.isChecked();
-        String remindMeSelection;
-        if (shouldRemind) {
-            remindMeSelection = "Yes";
-        } else {
-            remindMeSelection = "No";
-        }
+        // ToDo: Code for getting image from camera and passing it to content value below
+        String taskImage = null;
 
         Log.d(TAG, "Task to add: " + task);
         Log.d(TAG, "Task due date: " + dueDate);
@@ -289,8 +240,6 @@ public class AddTaskActivity extends AppCompatActivity implements DatePickerDial
         Log.d(TAG, "Task urgency: " + urgency);
         Log.d(TAG, "Task Location (Lat): " + locationLat);
         Log.d(TAG, "Task Location (Lng): " + locationLong);
-        Log.d(TAG, "Task Location Radius (m): " + locationRadius);
-        Log.d(TAG, "Task reminder selection: " + remindMeSelection);
 
         SQLiteDatabase db = mHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -300,8 +249,7 @@ public class AddTaskActivity extends AppCompatActivity implements DatePickerDial
         values.put(TaskContract.TaskEntry.COL_TASK_URGENCY, urgency);
         values.put(TaskContract.TaskEntry.COL_TASK_LOCATION_LAT, locationLat);
         values.put(TaskContract.TaskEntry.COL_TASK_LOCATION_LNG, locationLong);
-        values.put(TaskContract.TaskEntry.COL_TASK_LOCATION_RADIUS, locationRadius);
-        values.put(TaskContract.TaskEntry.COL_TASK_REMINDER, remindMeSelection);
+        values.put(TaskContract.TaskEntry.COL_TASK_IMAGE, "Image goes here.");
         db.insertWithOnConflict(TaskContract.TaskEntry.TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
         db.close();
 
@@ -322,16 +270,15 @@ public class AddTaskActivity extends AppCompatActivity implements DatePickerDial
         Intent i = new Intent(AddTaskActivity.this, ChooseLocationActivity.class);
         startActivity(i);
 
-        newLat = String.valueOf(ChooseLocationActivity.LastLatLng.latitude);
-        newLng = String.valueOf(ChooseLocationActivity.LastLatLng.longitude);
+        newLat = String.valueOf(Math.round(ChooseLocationActivity.LastLatLng.latitude * 1000000.0)/1000000.0);
+        newLng = String.valueOf(Math.round(ChooseLocationActivity.LastLatLng.longitude * 1000000.0)/1000000.0);
 
-        taskLocationLat.setText(newLat);
-        taskLocationLong.setText(newLng);
+        latitudeLabel.setText(newLat);
+        longitudeLabel.setText(newLng);
     }
 
     public static void SetInfoFromLocationChooser(double lat, double lng) {
-        taskLocationLat.setText(String.valueOf(lat));
-        taskLocationLong.setText(String.valueOf(lng));
-        taskLocationRadius.setText("1");
+        latitudeLabel.setText(String.valueOf(Math.round(lat * 1000000.0)/1000000.0));
+        longitudeLabel.setText(String.valueOf(Math.round(lng * 1000000.0)/1000000.0));
     }
 }
